@@ -287,7 +287,9 @@ if command -v pm2 >/dev/null 2>&1; then
   ERR_LOG="$(pm2 logs --nostream --lines 200 --err 2>/dev/null | grep -iE 'error|exception|failed|ENOENT|EADDRINUSE' | tail -15)"
   if [[ -n "$ERR_LOG" ]]; then
     printf '%s\n' "$ERR_LOG" | sed 's/^/    /'
-    warn "در لاگ pm2 خطا هست (بالا)"
+    # pm2 لاگ را با ری‌استارت پاک نمی‌کند، پس این خطوط ممکن است مربوط به
+    # قبل از آخرین استارت سالم باشند و بی‌جهت نگران‌کننده به‌نظر برسند.
+    warn "در لاگ pm2 خطا هست (بالا) — اگر پروسه تازه ری‌استارت شده احتمالاً مربوط به قبل است؛ «pm2 flush» بزنید و دوباره اجرا کنید"
     LOG_FOUND=1
   fi
 fi
