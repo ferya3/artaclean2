@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Breadcrumbs, PageHeader, ProductImage } from "@/components/ui/Primitives";
+import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
+import ProductVisual from "@/components/ui/ProductVisual";
+import Reveal from "@/components/ui/Reveal";
 import { productsByCategory } from "@/lib/data/products";
 import { categories, categoryGroups } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
@@ -45,8 +47,8 @@ export default function ProductsPage() {
                 {list.map((c) => {
                   const count = productsByCategory(c.slug).length;
                   return (
-                    <Link key={c.slug} href={`/products/${c.slug}`} className="card group overflow-hidden hover:shadow-card">
-                      <ProductImage label={c.latin} ratio="aspect-[16/9]" />
+                    <Link key={c.slug} href={`/products/${c.slug}`} className="card card-hover group block overflow-hidden">
+                      <ProductVisual kind={c.slug} ratio="aspect-[16/9]" label={c.name} className="transition-transform duration-[900ms] ease-out group-hover:scale-[1.07]" />
                       <div className="p-5">
                         <div className="flex items-baseline justify-between gap-3">
                           <h3 className="font-semibold group-hover:text-accent">{c.name}</h3>

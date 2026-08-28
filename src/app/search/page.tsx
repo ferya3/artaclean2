@@ -80,7 +80,7 @@ export default async function SearchPage({ searchParams }: Search) {
               <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {group.items.map((hit) => (
                   <li key={hit.href + hit.title}>
-                    <Link href={hit.href} className="card block h-full p-5 hover:shadow-card">
+                    <Link href={hit.href} className="card card-hover block h-full p-5">
                       <p className="font-medium">{hit.title}</p>
                       <p className="mt-1.5 text-sm leading-6 text-muted">{hit.subtitle}</p>
                     </Link>

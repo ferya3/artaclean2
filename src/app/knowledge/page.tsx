@@ -42,7 +42,7 @@ export default function KnowledgePage() {
               </h2>
               <div className="grid gap-5 lg:grid-cols-3">
                 {list.map((a) => (
-                  <Link key={a.slug} href={`/knowledge/${a.slug}`} className="card group flex flex-col p-6 hover:shadow-card">
+                  <Link key={a.slug} href={`/knowledge/${a.slug}`} className="card card-hover group flex h-full flex-col p-6">
                     <h3 className="text-lg font-semibold leading-8 group-hover:text-accent">{a.title}</h3>
                     <p className="mt-2 flex-1 text-sm leading-7 text-muted">{a.excerpt}</p>
                     <p className="mt-4 text-xs text-muted">

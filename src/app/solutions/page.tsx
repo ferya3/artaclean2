@@ -30,7 +30,7 @@ export default function SolutionsPage() {
 
       <div className="shell grid gap-5 pb-16 sm:grid-cols-2 lg:grid-cols-3">
         {industries.map((i) => (
-          <Link key={i.slug} href={`/solutions/${i.slug}`} className="card group flex flex-col p-6 hover:shadow-card">
+          <Link key={i.slug} href={`/solutions/${i.slug}`} className="card card-hover group flex h-full flex-col p-6">
             <p className="eyebrow">{i.latin}</p>
             <h2 className="mt-2 text-lg font-semibold group-hover:text-accent">{i.name}</h2>
             <p className="mt-2 flex-1 text-sm leading-7 text-muted">{i.blurb}</p>

@@ -102,7 +102,7 @@ export default async function SolutionPage({ params }: Params) {
           <h2 className="mb-8 text-2xl font-bold tracking-tight">دسته تجهیزات پیشنهادی</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {cats.map((c) => (
-              <Link key={c.slug} href={`/products/${c.slug}`} className="card group p-5 hover:shadow-card">
+              <Link key={c.slug} href={`/products/${c.slug}`} className="card card-hover group p-5">
                 <p className="text-xs text-muted">{c.latin}</p>
                 <p className="mt-1 font-semibold group-hover:text-accent">{c.name}</p>
                 <p className="mt-2 text-sm leading-7 text-muted">{c.blurb}</p>

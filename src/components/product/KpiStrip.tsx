@@ -3,34 +3,48 @@
 import { useEffect, useRef, useState } from "react";
 
 import { num } from "@/lib/format";
+import { specRatio } from "@/lib/scale";
 import type { Spec } from "@/lib/types";
 
 /**
  * نوار KPI صفحه محصول.
  * Motion اینجا کارکرد دارد نه تزئین: شمارش عدد از صفر، نگاه را روی همان چهار
- * عددی نگه می‌دارد که تصمیم خرید صنعتی را می‌سازند.
+ * عددی نگه می‌دارد که تصمیم خرید صنعتی را می‌سازند؛ و نوار زیر هر عدد، جایگاه
+ * آن را در مقیاس کل کاتالوگ نشان می‌دهد.
  */
 export default function KpiStrip({ kpis }: { kpis: Spec[] }) {
   return (
-    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-card bg-line md:grid-cols-4">
-      {kpis.map((spec) => (
-        <div key={spec.key} className="bg-surface px-5 py-7 text-center">
-          {spec.value !== undefined ? (
-            <p className="num text-3xl font-bold tracking-tight sm:text-4xl">
-              <CountUp to={spec.value} />
-              {spec.unit && <span className="ms-1 text-base font-medium text-muted">{spec.unit}</span>}
-            </p>
-          ) : (
-            <p className="text-2xl font-bold tracking-tight">{spec.text}</p>
-          )}
-          <p className="mt-2 text-xs text-muted">{spec.label}</p>
-        </div>
-      ))}
+    <div className="grid gap-px overflow-hidden rounded-xl2 border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {kpis.map((spec) => {
+        const ratio = specRatio(spec.key, spec.value);
+        return (
+          <div key={spec.key} className="group bg-surface px-6 py-9 transition-colors hover:bg-canvas">
+            {spec.value !== undefined ? (
+              <p className="text-4xl font-black tracking-tight sm:text-5xl">
+                <span className="num bg-gradient-to-bl from-ink to-ink/55 bg-clip-text text-transparent">
+                  <CountUp to={spec.value} />
+                </span>
+                {spec.unit && <span className="ms-1.5 text-base font-bold text-accent">{spec.unit}</span>}
+              </p>
+            ) : (
+              <p className="text-2xl font-black tracking-tight">{spec.text}</p>
+            )}
+
+            <p className="mt-3 text-xs text-muted">{spec.label}</p>
+
+            {ratio !== null && (
+              <div className="spec-bar mt-4">
+                <span style={{ width: `${Math.max(8, Math.min(100, ratio * 100))}%` }} />
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function CountUp({ to, duration = 900 }: { to: number; duration?: number }) {
+function CountUp({ to, duration = 1100 }: { to: number; duration?: number }) {
   const [value, setValue] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const done = useRef(false);
@@ -39,8 +53,7 @@ function CountUp({ to, duration = 900 }: { to: number; duration?: number }) {
     const node = ref.current;
     if (!node) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setValue(to);
       return;
     }
@@ -53,8 +66,7 @@ function CountUp({ to, duration = 900 }: { to: number; duration?: number }) {
         const tick = (now: number) => {
           const p = Math.min((now - start) / duration, 1);
           // easeOutCubic — سریع شروع می‌شود، نرم می‌ایستد.
-          const eased = 1 - Math.pow(1 - p, 3);
-          setValue(to * eased);
+          setValue(to * (1 - Math.pow(1 - p, 3)));
           if (p < 1) requestAnimationFrame(tick);
           else setValue(to);
         };

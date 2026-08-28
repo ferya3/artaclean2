@@ -7,13 +7,17 @@ export function Breadcrumbs({ trail }: { trail: { label: string; href?: string }
         {trail.map((item, i) => (
           <li key={`${item.label}-${i}`} className="flex items-center gap-2">
             {item.href ? (
-              <Link href={item.href} className="hover:text-ink">
+              <Link href={item.href} className="transition-colors hover:text-ink">
                 {item.label}
               </Link>
             ) : (
               <span className="text-ink">{item.label}</span>
             )}
-            {i < trail.length - 1 && <span aria-hidden className="text-line">/</span>}
+            {i < trail.length - 1 && (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-line" aria-hidden>
+                <path d="M14 6l-6 6 6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+              </svg>
+            )}
           </li>
         ))}
       </ol>
@@ -26,103 +30,142 @@ export function SectionHeading({
   title,
   lead,
   action,
+  tone = "light",
 }: {
   eyebrow?: string;
   title: string;
   lead?: string;
   action?: React.ReactNode;
+  tone?: "light" | "deep";
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
       <div className="max-w-2xl">
-        {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h2>
-        {lead && <p className="mt-3 text-muted">{lead}</p>}
+        {eyebrow && (
+          <p className="eyebrow-accent mb-3">
+            <span className="h-px w-6 bg-accent" aria-hidden />
+            {eyebrow}
+          </p>
+        )}
+        <h2 className="text-section font-extrabold text-balance">{title}</h2>
+        {lead && (
+          <p className={`mt-4 leading-8 ${tone === "deep" ? "text-white/60" : "text-muted"}`}>{lead}</p>
+        )}
       </div>
       {action}
     </div>
   );
 }
 
+/**
+ * سربرگ صفحه.
+ * نسخه deep برای صفحاتی که باید «وزن» داشته باشند (دسته‌بندی، راهکار، برند)
+ * تا ورود به هر بخش، ریتم بصری خودش را داشته باشد.
+ */
 export function PageHeader({
   eyebrow,
   title,
   lead,
   children,
+  tone = "deep",
+  aside,
 }: {
   eyebrow?: string;
   title: string;
   lead?: string;
   children?: React.ReactNode;
+  tone?: "light" | "deep";
+  aside?: React.ReactNode;
 }) {
+  if (tone === "light") {
+    return (
+      <header className="border-b border-line bg-surface">
+        <div className="shell py-12 sm:py-16">
+          {eyebrow && <p className="eyebrow-accent mb-3">{eyebrow}</p>}
+          <h1 className="max-w-3xl text-hero font-extrabold text-balance">{title}</h1>
+          {lead && <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">{lead}</p>}
+          {children && <div className="mt-7">{children}</div>}
+        </div>
+      </header>
+    );
+  }
+
   return (
-    <header className="border-b border-line bg-surface">
-      <div className="shell py-10 sm:py-14">
-        {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
-        <h1 className="max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
-        {lead && <p className="mt-4 max-w-2xl text-lg leading-8 text-muted">{lead}</p>}
-        {children && <div className="mt-6">{children}</div>}
+    <header className="section-deep grain">
+      <div
+        className="glow -top-24 start-[12%] h-72 w-72 opacity-25"
+        style={{ background: "rgb(var(--c-accent))" }}
+      />
+      <div className="absolute inset-0 blueprint opacity-70" aria-hidden />
+      <div className="shell relative grid gap-10 py-14 sm:py-20 lg:grid-cols-12">
+        <div className={aside ? "lg:col-span-7" : "lg:col-span-9"}>
+          {eyebrow && (
+            <p className="eyebrow-accent mb-4 flex items-center gap-2">
+              <span className="h-px w-8 bg-accent" aria-hidden />
+              {eyebrow}
+            </p>
+          )}
+          <h1 className="text-hero font-extrabold text-white text-balance">{title}</h1>
+          {lead && <p className="mt-5 max-w-2xl text-lg leading-9 text-white/60">{lead}</p>}
+          {children && <div className="mt-8">{children}</div>}
+        </div>
+        {aside && <div className="lg:col-span-5">{aside}</div>}
       </div>
     </header>
   );
 }
 
-/**
- * جای تصویر محصول. عمداً به‌جای تصویر واقعی، یک نشانه هندسی می‌گذارد تا
- * ساختار صفحه بدون دارایی تصویری هم درست ارزیابی شود.
- */
-export function ProductImage({
-  label,
-  ratio = "aspect-[4/3]",
-  className = "",
+export function Badge({
+  children,
+  tone = "neutral",
 }: {
-  label: string;
-  ratio?: string;
-  className?: string;
+  children: React.ReactNode;
+  tone?: "neutral" | "accent" | "outline";
 }) {
-  return (
-    <div
-      className={`relative ${ratio} overflow-hidden rounded-card bg-gradient-to-br from-primary-soft to-canvas ${className}`}
-      role="img"
-      aria-label={`تصویر ${label}`}
-    >
-      <svg
-        className="absolute inset-0 h-full w-full text-ink/[0.07]"
-        aria-hidden
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
-            <path d="M28 0H0V28" fill="none" stroke="currentColor" strokeWidth="1" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center p-6">
-        <span className="text-center text-xs font-medium text-muted/70">{label}</span>
-      </div>
-    </div>
-  );
-}
-
-export function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "accent" }) {
   const cls =
     tone === "accent"
-      ? "bg-accent-soft text-accent"
-      : "bg-primary-soft text-ink/70";
+      ? "bg-accent text-white shadow-[0_6px_16px_-8px_rgb(255_106_26/0.9)]"
+      : tone === "outline"
+        ? "border border-line text-muted"
+        : "bg-ink/[0.06] text-ink/70";
   return (
-    <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-medium ${cls}`}>
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${cls}`}
+    >
       {children}
     </span>
   );
 }
 
-export function EmptyState({ title, body, action }: { title: string; body: string; action?: React.ReactNode }) {
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string;
+  body: string;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="card px-6 py-16 text-center">
-      <p className="text-lg font-semibold">{title}</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-muted">{body}</p>
-      {action && <div className="mt-6 flex justify-center">{action}</div>}
+    <div className="card px-6 py-20 text-center">
+      <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-ink/[0.04]">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-muted" aria-hidden>
+          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M20 20l-3.2-3.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      </div>
+      <p className="text-lg font-bold">{title}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted">{body}</p>
+      {action && <div className="mt-7 flex justify-center">{action}</div>}
+    </div>
+  );
+}
+
+/** نوار نسبت برای مقادیر عددی کارت محصول. */
+export function SpecBar({ ratio }: { ratio: number }) {
+  return (
+    <div className="spec-bar mt-1.5">
+      <span style={{ width: `${Math.max(6, Math.min(100, ratio * 100))}%` }} />
     </div>
   );
 }

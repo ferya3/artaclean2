@@ -29,7 +29,7 @@ export default function ServicesPage() {
 
       <div className="shell grid gap-5 pb-16 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((s) => (
-          <Link key={s.slug} href={`/services/${s.slug}`} className="card group flex flex-col p-6 hover:shadow-card">
+          <Link key={s.slug} href={`/services/${s.slug}`} className="card card-hover group flex h-full flex-col p-6">
             <p className="eyebrow">{s.latin}</p>
             <h2 className="mt-2 text-lg font-semibold group-hover:text-accent">{s.name}</h2>
             <p className="mt-2 flex-1 text-sm leading-7 text-muted">{s.blurb}</p>

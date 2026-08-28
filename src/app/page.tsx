@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import QuickAdvisor from "@/components/advisor/QuickAdvisor";
 import ProductCard from "@/components/product/ProductCard";
-import { ProductImage, SectionHeading } from "@/components/ui/Primitives";
+import ProductVisual from "@/components/ui/ProductVisual";
+import Reveal from "@/components/ui/Reveal";
+import { SectionHeading } from "@/components/ui/Primitives";
 import { brands } from "@/lib/data/brands";
 import { industries } from "@/lib/data/industries";
 import { articles, articleKindLabels, projects } from "@/lib/data/knowledge";
@@ -14,7 +16,10 @@ import { fa } from "@/lib/format";
 const FEATURED = ["vertex-r850", "arta-s700", "arta-w800", "vertex-ax60"];
 
 const TRUST = [
-  { title: "مشاوره فنی پیش از خرید", body: "انتخاب دستگاه بر اساس متراژ، نوع کف و آلودگی واقعی سایت — نه بر اساس موجودی انبار." },
+  {
+    title: "مشاوره فنی پیش از خرید",
+    body: "انتخاب دستگاه بر اساس متراژ، نوع کف و آلودگی واقعی سایت — نه بر اساس موجودی انبار.",
+  },
   { title: "گارانتی مکتوب", body: "۱۲ ماه دستگاه و ۲۴ ماه باتری لیتیوم، با شرایط شفاف پیش از خرید." },
   { title: "سرویس در محل", body: "قرارداد نگهداری پیشگیرانه و اعزام تکنسین برای خرابی اضطراری." },
   { title: "قطعات تا ۱۰ سال", body: "تأمین مصرفی و قطعه یدکی برای تمام مدل‌های فروخته‌شده." },
@@ -28,249 +33,373 @@ export default function HomePage() {
 
   return (
     <>
-      {/* 01 — HERO */}
-      <section className="border-b border-line bg-surface">
-        <div className="shell grid gap-10 py-14 lg:grid-cols-12 lg:py-20">
-          <div className="lg:col-span-7">
-            <p className="eyebrow">تجهیزات نظافت صنعتی</p>
-            <h1 className="mt-4 text-4xl font-bold leading-[1.15] tracking-tight sm:text-5xl">
-              تجهیزات حرفه‌ای برای نظافت
-              <br />
-              سریع‌تر، ارزان‌تر و دقیق‌تر
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-muted">
-              از کارخانه و انبار تا بیمارستان و مجتمع تجاری. ما اول شرایط سایت شما را می‌سنجیم، بعد
-              دستگاه پیشنهاد می‌دهیم.
-            </p>
+      {/* ══════════════════════════════════════════════════ 01 — HERO */}
+      <section className="section-deep grain pb-28 pt-10 sm:pt-16">
+        <div
+          className="glow -top-20 start-[8%] h-[26rem] w-[26rem] opacity-30"
+          style={{ background: "rgb(var(--c-accent))" }}
+        />
+        <div
+          className="glow bottom-0 end-[10%] h-80 w-80 opacity-20"
+          style={{ background: "rgb(var(--c-steel))" }}
+        />
+        <div className="absolute inset-0 blueprint opacity-80" aria-hidden />
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/products" className="btn-primary px-5 py-3">
-                مشاهده تجهیزات
+        <div className="shell relative grid items-center gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <Reveal>
+              <p className="eyebrow-accent flex items-center gap-3">
+                <span className="h-px w-10 bg-accent" aria-hidden />
+                تجهیزات نظافت صنعتی
+              </p>
+            </Reveal>
+
+            <Reveal delay={80}>
+              {/* هر سطر عمداً whitespace-nowrap است: شکستن خودکار خط در فارسی،
+                  عبارت گرادیانی را دو تکه می‌کرد و ریتم تیتر را از بین می‌برد. */}
+              <h1 className="mt-6 text-[clamp(1.9rem,4.6vw,3.5rem)] font-black leading-[1.16] tracking-tight text-white">
+                <span className="block whitespace-nowrap">نظافت صنعتی،</span>
+                <span className="gradient-text block whitespace-nowrap">سریع‌تر و ارزان‌تر</span>
+              </h1>
+            </Reveal>
+
+            <Reveal delay={160}>
+              <p className="mt-6 max-w-xl text-lg leading-9 text-white/60">
+                از کارخانه و انبار تا بیمارستان و مجتمع تجاری. ما اول شرایط سایت شما را می‌سنجیم،
+                بعد دستگاه پیشنهاد می‌دهیم — نه برعکس.
+              </p>
+            </Reveal>
+
+            <Reveal delay={240}>
+              {/* روی موبایل تمام‌عرض و روی هم؛ wrap ساده باعث می‌شد دکمه دوم
+                  با عرض متفاوت، پله‌ای و نامرتب بنشیند. */}
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Link href="/advisor" className="btn-accent w-full px-6 py-3.5 text-[15px] sm:w-auto">
+                  دستگاه مناسبم را پیدا کن
+                </Link>
+                <Link href="/products" className="btn-glass w-full px-6 py-3.5 text-[15px] sm:w-auto">
+                  مشاهده تجهیزات
+                </Link>
+              </div>
+            </Reveal>
+
+            <Reveal delay={320}>
+              <dl className="mt-12 grid max-w-lg grid-cols-3 gap-8">
+                {[
+                  { v: "۲۸", l: "سال سابقه" },
+                  { v: "۱۲۰۰+", l: "دستگاه نصب‌شده" },
+                  { v: "۹۶٪", l: "تمدید قرارداد سرویس" },
+                ].map((stat) => (
+                  <div key={stat.l}>
+                    <dt className="text-3xl font-black text-white">{stat.v}</dt>
+                    <dd className="mt-1.5 text-xs leading-5 text-white/45">{stat.l}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
+          </div>
+
+          {/* دستگاه شاخص + پلاک‌های مشخصات شناور */}
+          <Reveal delay={200} className="lg:col-span-6">
+            <div className="relative animate-float-soft">
+              <div
+                className="glow inset-x-10 top-10 h-64 opacity-25"
+                style={{ background: "rgb(var(--c-accent))" }}
+              />
+              <ProductVisual
+                kind="floor-scrubbers"
+                variant="ride-on"
+                tone="deep"
+                ratio="aspect-[4/3]"
+                label="اسکرابر سرنشین‌دار"
+                className="rounded-xl2 border border-white/10"
+              />
+
+              {/* هر دو پلاک سمت start می‌نشینند: بدنه دستگاه به سمت end متمایل
+                  است و پلاک شناور نباید روی خطوط طرح بیفتد. */}
+              <div className="absolute -start-2 top-8 rounded-xl border border-white/10 bg-deep/85 px-4 py-2.5 backdrop-blur sm:start-4">
+                <p className="num text-xl font-black text-white">5,000</p>
+                <p className="text-[10px] text-white/45">m²/h راندمان</p>
+              </div>
+
+              <div className="absolute -start-2 top-32 rounded-xl border border-white/10 bg-deep/85 px-4 py-2.5 backdrop-blur sm:start-4">
+                <p className="num text-xl font-black text-white">5.5</p>
+                <p className="text-[10px] text-white/45">ساعت کارکرد</p>
+              </div>
+
+              <div className="absolute bottom-2 start-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-deep/85 px-4 py-1.5 text-[11px] text-white/60 backdrop-blur">
+                یک اپراتور · یک شیفت · ۱۸٬۰۰۰ متر مربع
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════ 02 — PRODUCT ADVISOR (روی لبه Hero) */}
+      <div className="shell relative z-10 -mt-20">
+        <Reveal>
+          <QuickAdvisor />
+        </Reveal>
+      </div>
+
+      {/* ══════════════════════════════════════════════════ برندها — نوار */}
+      <section className="border-b border-line py-10">
+        <div className="shell flex flex-wrap items-center justify-center gap-x-14 gap-y-5 opacity-60">
+          <span className="text-xs text-muted">برندهای موجود در کاتالوگ:</span>
+          {brands.map((b) => (
+            <Link
+              key={b.slug}
+              href={`/brands/${b.slug}`}
+              className="text-xl font-black tracking-tight text-ink/45 transition-colors hover:text-ink"
+            >
+              {b.name}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ 03 — دسته‌بندی محصولات */}
+      <section className="shell py-20">
+        <Reveal>
+          <SectionHeading
+            eyebrow="محصولات"
+            title="دسته‌بندی تجهیزات"
+            lead="اگر می‌دانید دنبال چه نوع دستگاهی هستید، از اینجا شروع کنید."
+            action={
+              <Link href="/products" className="btn-ghost btn-sm">
+                همه دسته‌ها ←
               </Link>
-              <Link href="/advisor" className="btn-ghost px-5 py-3">
-                مشاوره انتخاب دستگاه
+            }
+          />
+        </Reveal>
+
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.slice(0, 8).map((c, i) => (
+            <Reveal key={c.slug} delay={i * 60}>
+              <Link href={`/products/${c.slug}`} className="card card-hover group block h-full overflow-hidden">
+                <ProductVisual
+                  kind={c.slug}
+                  ratio="aspect-[16/11]"
+                  label={c.name}
+                  className="transition-transform duration-[900ms] ease-out group-hover:scale-[1.07]"
+                />
+                <div className="p-5">
+                  <p className="font-bold transition-colors group-hover:text-accent">{c.name}</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-wider text-muted">{c.latin}</p>
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════ 04 — محصولات منتخب */}
+      <section className="border-y border-line bg-surface py-20">
+        <div className="shell">
+          <Reveal>
+            <SectionHeading
+              eyebrow="منتخب"
+              title="پرکاربردترین دستگاه‌ها"
+              lead="مدل‌هایی که بیشترین تناسب را با سایت‌های صنعتی ایران داشته‌اند."
+              action={
+                <Link href="/products" className="btn-ghost btn-sm">
+                  همه محصولات ←
+                </Link>
+              }
+            />
+          </Reveal>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {featured.map((p, i) => (
+              <Reveal key={p.slug} delay={i * 70}>
+                <ProductCard product={p} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════ 05 — راهکار بر اساس صنعت */}
+      <section className="section-deep grain py-20">
+        <div
+          className="glow -top-16 end-[15%] h-80 w-80 opacity-20"
+          style={{ background: "rgb(var(--c-accent))" }}
+        />
+        <div className="shell relative">
+          <Reveal>
+            <SectionHeading
+              tone="deep"
+              eyebrow="راهکارها"
+              title="اگر مدل دستگاه را نمی‌دانید، از مسئله شروع کنید"
+              lead="هر صنعت، ترکیب آلودگی و محدودیت خودش را دارد. راهکار را از همان‌جا می‌بندیم."
+              action={
+                <Link href="/solutions" className="btn-glass btn-sm">
+                  همه راهکارها ←
+                </Link>
+              }
+            />
+          </Reveal>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {industries.slice(0, 6).map((industry, i) => (
+              <Reveal key={industry.slug} delay={i * 60}>
+                <Link
+                  href={`/solutions/${industry.slug}`}
+                  className="card-deep group flex h-full flex-col p-7 transition-all duration-500 hover:border-white/20 hover:shadow-lift"
+                >
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-accent">{industry.latin}</p>
+                  <p className="mt-3 text-xl font-bold text-white">{industry.name}</p>
+                  <p className="mt-3 line-clamp-3 text-sm leading-7 text-white/50">{industry.blurb}</p>
+                  {/* پاورقی به کف کارت سنجاق می‌شود تا خط جداکننده در کل ردیف هم‌تراز بماند */}
+                  <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-5 text-xs text-white/40">
+                    <span>
+                      {fa(industry.problems.length)} مسئله رایج · {fa(industry.recommendedCategories.length)} دسته
+                    </span>
+                    <span className="text-accent transition-transform duration-300 group-hover:-translate-x-1">←</span>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════ 06 — چرا ما */}
+      <section className="shell py-20">
+        <Reveal>
+          <SectionHeading
+            eyebrow="چرا ما"
+            title="خرید دستگاه صنعتی، نقطه پایان معامله نیست؛ نقطه شروع رابطه است"
+          />
+        </Reveal>
+        <div className="grid gap-px overflow-hidden rounded-xl2 border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
+          {TRUST.map((item, i) => (
+            <div key={item.title} className="group bg-surface p-7 transition-colors hover:bg-canvas">
+              <span className="num block text-xs font-bold text-accent">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="mt-4 font-bold leading-6">{item.title}</p>
+              <p className="mt-2.5 text-sm leading-7 text-muted">{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════ 07 — پروژه‌ها */}
+      <section className="border-y border-line bg-surface py-20">
+        <div className="shell">
+          <Reveal>
+            <SectionHeading
+              eyebrow="پروژه‌ها"
+              title="پروژه‌های اجراشده"
+              lead="مشخصات سایت، دستگاه انتخاب‌شده و نتیجه — به‌جای شعار."
+              action={
+                <Link href="/company/projects" className="btn-ghost btn-sm">
+                  همه پروژه‌ها ←
+                </Link>
+              }
+            />
+          </Reveal>
+          <div className="grid gap-5 lg:grid-cols-3">
+            {projects.slice(0, 3).map((p, i) => (
+              <Reveal key={p.slug} delay={i * 70}>
+                <article className="card card-hover h-full p-7">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="eyebrow">{p.location}</p>
+                    <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[11px] font-bold text-accent">
+                      {p.area}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 text-lg font-bold leading-7">{p.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-muted">{p.result}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════ 08 — خدمات */}
+      <section className="shell py-20">
+        <Reveal>
+          <SectionHeading
+            eyebrow="خدمات"
+            title="نصب، سرویس، تعمیر، قطعات، آموزش، اجاره"
+            lead="برای تجهیزات صنعتی، خدمات پس از فروش بخشی از فروش است، نه یک صفحه فرعی."
+            action={
+              <Link href="/services" className="btn-ghost btn-sm">
+                همه خدمات ←
+              </Link>
+            }
+          />
+        </Reveal>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {services.map((s, i) => (
+            <Reveal key={s.slug} delay={i * 50}>
+              <Link href={`/services/${s.slug}`} className="card card-hover group block h-full p-6">
+                <p className="text-[11px] uppercase tracking-wider text-muted">{s.latin}</p>
+                <p className="mt-1.5 font-bold transition-colors group-hover:text-accent">{s.name}</p>
+                <p className="mt-2.5 text-sm leading-7 text-muted">{s.blurb}</p>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════ 09 — دانش */}
+      <section className="border-t border-line bg-surface py-20">
+        <div className="shell">
+          <Reveal>
+            <SectionHeading
+              eyebrow="راهنما"
+              title="پیش از خرید، این‌ها را بخوانید"
+              action={
+                <Link href="/knowledge" className="btn-ghost btn-sm">
+                  همه مقالات ←
+                </Link>
+              }
+            />
+          </Reveal>
+          <div className="grid gap-5 lg:grid-cols-3">
+            {articles.slice(0, 3).map((a, i) => (
+              <Reveal key={a.slug} delay={i * 70}>
+                <Link href={`/knowledge/${a.slug}`} className="card card-hover group block h-full p-7">
+                  <p className="eyebrow-accent">{articleKindLabels[a.kind]}</p>
+                  <h3 className="mt-3 text-lg font-bold leading-8 transition-colors group-hover:text-accent">
+                    {a.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-muted">{a.excerpt}</p>
+                  <p className="mt-6 text-xs text-muted">{fa(a.readingTime)} دقیقه مطالعه</p>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════ 10 — CTA پایانی */}
+      <section className="section-deep grain py-24">
+        <div
+          className="glow bottom-[-6rem] start-1/2 h-96 w-[36rem] -translate-x-1/2 opacity-25"
+          style={{ background: "rgb(var(--c-accent))" }}
+        />
+        <div className="shell relative text-center">
+          <Reveal>
+            <h2 className="mx-auto max-w-3xl text-section font-black text-white text-balance">
+              برای پروژه خودتان دستگاه مناسب پیدا کنید
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl leading-9 text-white/55">
+              متراژ، نوع کف و آلودگی را بگویید؛ فهرست کوتاه دستگاه‌های مناسب به‌همراه برآورد زمان
+              نظافت را دریافت کنید.
+            </p>
+            <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
+              <Link href="/advisor" className="btn-accent w-full px-7 py-3.5 text-[15px] sm:w-auto">
+                شروع مشاور انتخاب
+              </Link>
+              <Link href="/quote" className="btn-glass w-full px-7 py-3.5 text-[15px] sm:w-auto">
+                درخواست پیش‌فاکتور
               </Link>
             </div>
-
-            <dl className="mt-10 grid max-w-lg grid-cols-3 gap-px overflow-hidden rounded-card border border-line bg-line">
-              {[
-                { v: "۲۸", l: "سال سابقه" },
-                { v: "۱۲۰۰+", l: "دستگاه نصب‌شده" },
-                { v: "۹۶٪", l: "تمدید قرارداد سرویس" },
-              ].map((stat) => (
-                <div key={stat.l} className="bg-surface px-4 py-5 text-center">
-                  <dt className="text-2xl font-bold">{stat.v}</dt>
-                  <dd className="mt-1 text-xs text-muted">{stat.l}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          {/* 02 — PRODUCT ADVISOR در همان Hero */}
-          <div className="lg:col-span-5">
-            <QuickAdvisor />
-          </div>
-        </div>
-      </section>
-
-      {/* 03 — دسته‌بندی محصولات */}
-      <section className="shell py-16">
-        <SectionHeading
-          eyebrow="محصولات"
-          title="دسته‌بندی تجهیزات"
-          lead="اگر می‌دانید دنبال چه نوع دستگاهی هستید، از اینجا شروع کنید."
-          action={
-            <Link href="/products" className="btn-ghost">
-              همه دسته‌ها
-            </Link>
-          }
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.slice(0, 8).map((c) => (
-            <Link key={c.slug} href={`/products/${c.slug}`} className="card group overflow-hidden">
-              <ProductImage label={c.latin} ratio="aspect-[16/10]" />
-              <div className="p-4">
-                <p className="font-semibold group-hover:text-accent">{c.name}</p>
-                <p className="mt-1 text-xs text-muted">{c.latin}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 04 — محصولات منتخب */}
-      <section className="border-y border-line bg-surface py-16">
-        <div className="shell">
-          <SectionHeading
-            eyebrow="منتخب"
-            title="پرکاربردترین دستگاه‌ها"
-            lead="مدل‌هایی که بیشترین تناسب را با سایت‌های صنعتی ایران داشته‌اند."
-            action={
-              <Link href="/products" className="btn-ghost">
-                همه محصولات
-              </Link>
-            }
-          />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {featured.map((p) => (
-              <ProductCard key={p.slug} product={p} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 05 — راهکار بر اساس صنعت */}
-      <section className="shell py-16">
-        <SectionHeading
-          eyebrow="راهکارها"
-          title="اگر مدل دستگاه را نمی‌دانید، از مسئله شروع کنید"
-          lead="هر صنعت، ترکیب آلودگی و محدودیت خودش را دارد. راهکار را از همان‌جا می‌بندیم."
-          action={
-            <Link href="/solutions" className="btn-ghost">
-              همه راهکارها
-            </Link>
-          }
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {industries.slice(0, 6).map((i) => (
-            <Link key={i.slug} href={`/solutions/${i.slug}`} className="card group p-6 hover:shadow-card">
-              <p className="eyebrow">{i.latin}</p>
-              <p className="mt-2 text-lg font-semibold group-hover:text-accent">{i.name}</p>
-              <p className="mt-2 line-clamp-3 text-sm leading-7 text-muted">{i.blurb}</p>
-              <p className="mt-4 text-xs text-muted">
-                {i.problems.length} مسئله رایج · {i.recommendedCategories.length} دسته پیشنهادی
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 06 — چرا ما */}
-      <section className="border-y border-line bg-primary py-16 text-white">
-        <div className="shell">
-          <p className="eyebrow text-white/50">چرا ما</p>
-          <h2 className="mt-2 max-w-2xl text-2xl font-bold sm:text-3xl">
-            خرید دستگاه صنعتی، نقطه پایان معامله نیست؛ نقطه شروع رابطه است
-          </h2>
-          <div className="mt-10 grid gap-px overflow-hidden rounded-card bg-white/10 sm:grid-cols-2 lg:grid-cols-5">
-            {TRUST.map((item) => (
-              <div key={item.title} className="bg-primary p-6">
-                <p className="font-semibold">{item.title}</p>
-                <p className="mt-2 text-sm leading-7 text-white/60">{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 07 — برندها */}
-      <section className="shell py-16">
-        <SectionHeading eyebrow="برندها" title="برندهای موجود در کاتالوگ" />
-        <div className="grid gap-4 sm:grid-cols-3">
-          {brands.map((b) => (
-            <Link key={b.slug} href={`/brands/${b.slug}`} className="card group p-6 hover:shadow-card">
-              <p className="text-xl font-bold tracking-tight group-hover:text-accent">{b.name}</p>
-              <p className="mt-1 text-xs text-muted">
-                {b.country} · از {fa(b.since)}
-              </p>
-              <p className="mt-3 text-sm leading-7 text-muted">{b.blurb}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 08 — پروژه‌ها */}
-      <section className="border-y border-line bg-surface py-16">
-        <div className="shell">
-          <SectionHeading
-            eyebrow="پروژه‌ها"
-            title="پروژه‌های اجراشده"
-            lead="مشخصات سایت، دستگاه انتخاب‌شده و نتیجه — به‌جای شعار."
-            action={
-              <Link href="/company/projects" className="btn-ghost">
-                همه پروژه‌ها
-              </Link>
-            }
-          />
-          <div className="grid gap-4 lg:grid-cols-3">
-            {projects.slice(0, 3).map((p) => (
-              <article key={p.slug} className="card p-6">
-                <p className="eyebrow">{p.location}</p>
-                <h3 className="mt-2 font-semibold">{p.title}</h3>
-                <p className="mt-1 text-sm text-muted">{p.area}</p>
-                <p className="mt-3 text-sm leading-7 text-muted">{p.result}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 09 — خدمات */}
-      <section className="shell py-16">
-        <SectionHeading
-          eyebrow="خدمات"
-          title="نصب، سرویس، تعمیر، قطعات، آموزش، اجاره"
-          lead="برای تجهیزات صنعتی، خدمات پس از فروش بخشی از فروش است، نه یک صفحه فرعی."
-          action={
-            <Link href="/services" className="btn-ghost">
-              همه خدمات
-            </Link>
-          }
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((s) => (
-            <Link key={s.slug} href={`/services/${s.slug}`} className="card group p-5 hover:shadow-card">
-              <p className="text-xs text-muted">{s.latin}</p>
-              <p className="mt-1 font-semibold group-hover:text-accent">{s.name}</p>
-              <p className="mt-2 text-sm leading-7 text-muted">{s.blurb}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* 10 — دانش */}
-      <section className="border-y border-line bg-surface py-16">
-        <div className="shell">
-          <SectionHeading
-            eyebrow="راهنما"
-            title="پیش از خرید، این‌ها را بخوانید"
-            action={
-              <Link href="/knowledge" className="btn-ghost">
-                همه مقالات
-              </Link>
-            }
-          />
-          <div className="grid gap-4 lg:grid-cols-3">
-            {articles.slice(0, 3).map((a) => (
-              <Link key={a.slug} href={`/knowledge/${a.slug}`} className="card group p-6 hover:shadow-card">
-                <p className="eyebrow">{articleKindLabels[a.kind]}</p>
-                <h3 className="mt-2 font-semibold leading-7 group-hover:text-accent">{a.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-muted">{a.excerpt}</p>
-                <p className="mt-4 text-xs text-muted">{fa(a.readingTime)} دقیقه مطالعه</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 11 — CTA */}
-      <section className="shell py-16">
-        <div className="card flex flex-wrap items-center justify-between gap-6 bg-ink p-8 text-white sm:p-12">
-          <div className="max-w-xl">
-            <h2 className="text-2xl font-bold sm:text-3xl">برای پروژه خودتان دستگاه مناسب پیدا کنید</h2>
-            <p className="mt-3 leading-8 text-white/70">
-              متراژ، نوع کف و آلودگی را بگویید؛ فهرست کوتاه دستگاه‌های مناسب به‌همراه برآورد زمان نظافت
-              را دریافت کنید.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/advisor" className="btn bg-white px-6 py-3 text-ink hover:bg-white/90">
-              شروع مشاور انتخاب
-            </Link>
-            <Link href="/quote" className="btn border border-white/25 px-6 py-3 text-white hover:bg-white/10">
-              درخواست پیش‌فاکتور
-            </Link>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

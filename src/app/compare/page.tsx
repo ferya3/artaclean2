@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { useCompare } from "@/components/compare/CompareProvider";
-import { Breadcrumbs } from "@/components/ui/Primitives";
+import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { recommendAmong } from "@/lib/advisor";
 import { getProduct, products } from "@/lib/data/products";
 import { areaLabels, machineTypeLabels, powerSourceLabels } from "@/lib/data/taxonomy";
@@ -32,24 +32,24 @@ export default function ComparePage() {
 
   return (
     <>
+      <PageHeader
+        eyebrow="موتور مقایسه"
+        title="مقایسه دستگاه‌ها"
+        lead="تا ۴ دستگاه را کنار هم بگذارید؛ ردیف‌هایی که تفاوت دارند برجسته می‌شوند و بهترین مقدار هر ردیف علامت می‌خورد."
+      />
+
       <div className="shell py-6">
         <Breadcrumbs trail={[{ label: "خانه", href: "/" }, { label: "مقایسه دستگاه‌ها" }]} />
       </div>
 
-      <div className="shell pb-16">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">مقایسه دستگاه‌ها</h1>
-            <p className="mt-2 text-muted">
-              تا ۴ دستگاه را کنار هم بگذارید؛ تفاوت‌ها برجسته می‌شوند.
-            </p>
-          </div>
-          {picked.length > 0 && (
-            <button type="button" onClick={clear} className="btn-ghost text-sm">
+      <div className="shell pb-20">
+        {picked.length > 0 && (
+          <div className="mb-8 flex justify-end">
+            <button type="button" onClick={clear} className="btn-ghost btn-sm">
               پاک کردن فهرست
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {!ready ? null : picked.length === 0 ? (
           <div className="card px-6 py-16 text-center">

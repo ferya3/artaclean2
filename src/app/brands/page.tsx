@@ -28,7 +28,7 @@ export default function BrandsPage() {
         {brands.map((b) => {
           const count = productsByBrand(b.slug).length;
           return (
-            <Link key={b.slug} href={`/brands/${b.slug}`} className="card group p-6 hover:shadow-card">
+            <Link key={b.slug} href={`/brands/${b.slug}`} className="card card-hover group p-6">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="text-2xl font-bold tracking-tight group-hover:text-accent">{b.name}</p>
                 <span className="text-xs text-muted">{fa(count)} مدل</span>

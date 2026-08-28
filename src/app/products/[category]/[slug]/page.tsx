@@ -8,7 +8,8 @@ import Gallery from "@/components/product/Gallery";
 import KpiStrip from "@/components/product/KpiStrip";
 import ProductCard from "@/components/product/ProductCard";
 import SpecSheet from "@/components/product/SpecSheet";
-import { Badge, Breadcrumbs } from "@/components/ui/Primitives";
+import { Breadcrumbs } from "@/components/ui/Primitives";
+import Reveal from "@/components/ui/Reveal";
 import { getBrand } from "@/lib/data/brands";
 import { spareParts } from "@/lib/data/parts";
 import { getProduct, products } from "@/lib/data/products";
@@ -71,92 +72,115 @@ export default async function ProductPage({ params }: Params) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <div className="shell py-6">
-        <Breadcrumbs
-          trail={[
-            { label: "خانه", href: "/" },
-            { label: "محصولات", href: "/products" },
-            { label: category?.name ?? "دسته", href: `/products/${product.category}` },
-            { label: product.model },
-          ]}
+      {/* ═════════════════════════════════════════ باند تیره معرفی محصول */}
+      <section className="section-deep grain pb-16 pt-6">
+        <div
+          className="glow -top-16 start-[20%] h-96 w-96 opacity-25"
+          style={{ background: "rgb(var(--c-accent))" }}
         />
-      </div>
+        <div className="absolute inset-0 blueprint opacity-70" aria-hidden />
 
-      {/* هدر محصول */}
-      <section className="shell grid gap-10 pb-12 lg:grid-cols-12">
-        <div className="lg:col-span-6">
-          <Gallery model={product.model} />
-        </div>
-
-        <div className="lg:col-span-6">
-          <div className="flex flex-wrap items-center gap-2">
-            {product.badges?.map((b) => (
-              <Badge key={b} tone="accent">
-                {b}
-              </Badge>
-            ))}
-            {brand && (
-              <Link href={`/brands/${brand.slug}`} className="chip hover:border-ink/30">
-                {brand.name}
-              </Link>
-            )}
-            {product.subcategory && <Badge>{product.subcategory}</Badge>}
+        <div className="shell relative">
+          <div className="pb-8 text-white/45 [&_a:hover]:text-white [&_span]:text-white/80">
+            <Breadcrumbs
+              trail={[
+                { label: "خانه", href: "/" },
+                { label: "محصولات", href: "/products" },
+                { label: category?.name ?? "دسته", href: `/products/${product.category}` },
+                { label: product.model },
+              ]}
+            />
           </div>
 
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{product.name}</h1>
-          <p className="mt-3 text-lg leading-8 text-muted">{product.tagline}</p>
+          <div className="grid gap-12 lg:grid-cols-12">
+            <Reveal className="lg:col-span-6">
+              <Gallery product={product} />
+            </Reveal>
 
-          <dl className="mt-6 divide-y divide-line border-y border-line">
-            {product.kpis.map((spec) => (
-              <div key={spec.key} className="flex items-baseline justify-between py-2.5 text-sm">
-                <dt className="text-muted">{spec.label}</dt>
-                <dd className={spec.text ? "font-semibold" : "num font-semibold"}>{specValue(spec)}</dd>
+            <Reveal delay={120} className="lg:col-span-6">
+              <div className="flex flex-wrap items-center gap-2">
+                {product.badges?.map((b) => (
+                  <span
+                    key={b}
+                    className="rounded-full bg-accent px-3 py-1 text-[11px] font-bold text-white shadow-glow"
+                  >
+                    {b}
+                  </span>
+                ))}
+                {brand && (
+                  <Link
+                    href={`/brands/${brand.slug}`}
+                    className="rounded-full border border-white/15 px-3 py-1 text-[11px] font-semibold text-white/70 transition-colors hover:border-white/35 hover:text-white"
+                  >
+                    {brand.name}
+                  </Link>
+                )}
+                {product.subcategory && (
+                  <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-white/50">
+                    {product.subcategory}
+                  </span>
+                )}
               </div>
-            ))}
-          </dl>
 
-          <div className="mt-5">
-            {product.priceMode === "listed" && product.price ? (
-              <p className="text-2xl font-bold">{toman(product.price)}</p>
-            ) : (
-              <p className="text-sm text-muted">
-                قیمت این دستگاه بر اساس پیکربندی، تعداد و شرایط سایت اعلام می‌شود.
-              </p>
-            )}
+              <h1 className="mt-5 text-hero font-black text-white text-balance">{product.name}</h1>
+              <p className="mt-4 text-lg leading-9 text-white/60">{product.tagline}</p>
+
+              <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl2 border border-white/10 bg-white/10">
+                {product.kpis.map((spec) => (
+                  <div key={spec.key} className="bg-deep-2/80 px-5 py-4">
+                    <dt className="text-[11px] text-white/40">{spec.label}</dt>
+                    <dd className={`mt-1 text-lg font-black text-white ${spec.text ? "" : "num"}`}>
+                      {specValue(spec)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="mt-7">
+                {product.priceMode === "listed" && product.price ? (
+                  <p className="text-2xl font-black text-white">{toman(product.price)}</p>
+                ) : (
+                  <p className="text-sm leading-7 text-white/45">
+                    قیمت این دستگاه بر اساس پیکربندی، تعداد و شرایط سایت اعلام می‌شود.
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href={`/quote?product=${product.slug}`} className="btn-accent px-6 py-3.5">
+                  {product.priceMode === "listed" ? "ثبت سفارش" : "درخواست پیش‌فاکتور"}
+                </Link>
+                <Link href="/quote" className="btn-glass px-6 py-3.5">
+                  مشاوره تخصصی
+                </Link>
+                <CompareToggle slug={product.slug} tone="deep" className="px-6 py-3.5" />
+              </div>
+
+              <ul className="mt-8 flex flex-wrap gap-x-7 gap-y-2 text-xs text-white/40">
+                {["نصب و راه‌اندازی در محل", "آموزش اپراتور", `${fa(12)} ماه گارانتی`].map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-accent" aria-hidden>
+                      <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
           </div>
-
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link href={`/quote?product=${product.slug}`} className="btn-accent px-5 py-3">
-              {product.priceMode === "listed" ? "ثبت سفارش" : "درخواست پیش‌فاکتور"}
-            </Link>
-            <Link href="/quote" className="btn-ghost px-5 py-3">
-              مشاوره تخصصی
-            </Link>
-            <CompareToggle slug={product.slug} className="px-5 py-3" />
-          </div>
-
-          <p className="mt-5 text-xs leading-6 text-muted">
-            شامل نصب و راه‌اندازی در محل، آموزش اپراتور و {fa(12)} ماه گارانتی.{" "}
-            <Link href="/services/warranty" className="text-accent hover:underline">
-              شرایط گارانتی
-            </Link>
-          </p>
         </div>
       </section>
 
       {/* ناوبری بخش‌های صفحه */}
-      <nav className="sticky top-16 z-20 border-y border-line bg-surface/95 backdrop-blur">
+      <nav className="sticky top-16 z-20 border-b border-line bg-surface/95 backdrop-blur-xl">
         <div className="shell flex gap-1 overflow-x-auto py-2 text-sm">
           {SECTIONS.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="whitespace-nowrap rounded-lg px-3 py-2 text-muted hover:bg-canvas hover:text-ink"
+              className="whitespace-nowrap rounded-lg px-4 py-2 font-medium text-muted transition-colors hover:bg-canvas hover:text-ink"
             >
               {s.label}
             </a>
@@ -165,89 +189,110 @@ export default async function ProductPage({ params }: Params) {
       </nav>
 
       {/* چرا این دستگاه */}
-      <section id="overview" className="shell scroll-mt-32 py-14">
-        <h2 className="mb-8 text-2xl font-bold tracking-tight">چرا این دستگاه؟</h2>
-        <KpiStrip kpis={product.kpis} />
+      <section id="overview" className="shell scroll-mt-32 py-20">
+        <Reveal>
+          <h2 className="mb-10 text-section font-extrabold">چرا این دستگاه؟</h2>
+          <KpiStrip kpis={product.kpis} />
+        </Reveal>
 
-        <p className="mt-10 max-w-3xl text-lg leading-9">{product.summary}</p>
+        <Reveal delay={100}>
+          <p className="mt-14 max-w-3xl text-xl leading-10 text-balance">{product.summary}</p>
+        </Reveal>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {product.features.map((f) => (
-            <div key={f.title} className="card p-6">
-              <p className="font-semibold">{f.title}</p>
-              <p className="mt-2 text-sm leading-7 text-muted">{f.body}</p>
-            </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {product.features.map((f, i) => (
+            <Reveal key={f.title} delay={i * 80}>
+              <div className="card card-hover h-full p-7">
+                <span className="num block text-xs font-bold text-accent">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <p className="mt-4 text-[17px] font-bold leading-7">{f.title}</p>
+                <p className="mt-3 text-sm leading-7 text-muted">{f.body}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* کاربردها */}
-      <section id="applications" className="border-y border-line bg-surface py-14">
+      <section id="applications" className="border-y border-line bg-surface py-20">
         <div className="shell scroll-mt-32">
-          <h2 className="mb-2 text-2xl font-bold tracking-tight">
-            این دستگاه برای چه محیط‌هایی مناسب است؟
-          </h2>
-          <p className="mb-8 text-muted">روی هر محیط بزنید تا کاربرد مشخص همان محیط را ببینید.</p>
+          <Reveal>
+            <h2 className="mb-3 text-section font-extrabold">
+              این دستگاه برای چه محیط‌هایی مناسب است؟
+            </h2>
+            <p className="mb-9 text-muted">روی هر محیط بزنید تا کاربرد مشخص همان محیط را ببینید.</p>
+          </Reveal>
           <Applications applications={product.applications} />
         </div>
       </section>
 
       {/* مشخصات فنی */}
-      <section id="specs" className="shell scroll-mt-32 py-14">
-        <div className="grid gap-10 lg:grid-cols-12">
+      <section id="specs" className="shell scroll-mt-32 py-20">
+        <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <h2 className="mb-8 text-2xl font-bold tracking-tight">مشخصات فنی</h2>
+            <h2 className="mb-9 text-section font-extrabold">مشخصات فنی</h2>
             <SpecSheet groups={product.specGroups} />
           </div>
 
           <aside className="lg:col-span-5">
-            <div className="card bg-canvas p-6">
-              <p className="font-semibold">مطمئن نیستید این مدل اندازه سایت شماست؟</p>
-              <p className="mt-2 text-sm leading-7 text-muted">
-                متراژ و نوع آلودگی را بگویید تا بین این مدل و مدل‌های نزدیک، گزینه درست را با برآورد
-                زمان نظافت پیشنهاد کنیم.
-              </p>
-              <Link href="/advisor" className="btn-primary mt-4 w-full">
-                مقایسه با شرایط سایت من
-              </Link>
-              <Link href="/compare" className="btn-ghost mt-2 w-full">
-                جدول مقایسه دستگاه‌ها
-              </Link>
+            <div className="section-deep grain sticky top-32 rounded-xl2 p-8">
+              <div
+                className="glow -top-8 start-4 h-32 w-32 opacity-30"
+                style={{ background: "rgb(var(--c-accent))" }}
+              />
+              <div className="relative">
+                <p className="text-lg font-bold text-white">
+                  مطمئن نیستید این مدل اندازه سایت شماست؟
+                </p>
+                <p className="mt-3 text-sm leading-7 text-white/55">
+                  متراژ و نوع آلودگی را بگویید تا بین این مدل و مدل‌های نزدیک، گزینه درست را با
+                  برآورد زمان نظافت پیشنهاد کنیم.
+                </p>
+                <Link href="/advisor" className="btn-accent mt-6 w-full">
+                  مقایسه با شرایط سایت من
+                </Link>
+                <Link href="/compare" className="btn-glass mt-2 w-full">
+                  جدول مقایسه دستگاه‌ها
+                </Link>
+              </div>
             </div>
           </aside>
         </div>
       </section>
 
       {/* دانلودها */}
-      <section id="downloads" className="border-y border-line bg-surface py-14">
+      <section id="downloads" className="border-y border-line bg-surface py-20">
         <div className="shell scroll-mt-32">
-          <h2 className="mb-8 text-2xl font-bold tracking-tight">دانلودها</h2>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {product.downloads.map((d) => (
-              <li key={d.title}>
-                <a href={d.href} className="card flex items-center gap-4 p-4 hover:shadow-card">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary-soft text-xs font-bold">
+          <h2 className="mb-9 text-section font-extrabold">دانلودها</h2>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {product.downloads.map((d, i) => (
+              <Reveal key={d.title} delay={i * 60} as="li">
+                <a href={d.href} className="card card-hover group flex items-center gap-4 p-5">
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-accent-soft text-[11px] font-black text-accent">
                     PDF
                   </span>
-                  <span>
-                    <span className="block text-sm font-medium">{d.title}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{d.title}</span>
                     <span className="block text-xs text-muted">{d.size}</span>
                   </span>
+                  <span className="text-muted transition-transform duration-300 group-hover:-translate-x-1">←</span>
                 </a>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </div>
       </section>
 
       {/* لوازم جانبی و قطعات */}
-      <section id="parts" className="shell scroll-mt-32 py-14">
-        <div className="grid gap-10 lg:grid-cols-2">
+      <section id="parts" className="shell scroll-mt-32 py-20">
+        <div className="grid gap-12 lg:grid-cols-2">
           <div>
-            <h2 className="mb-6 text-2xl font-bold tracking-tight">لوازم جانبی</h2>
+            <h2 className="mb-7 text-section font-extrabold">لوازم جانبی</h2>
             <ul className="divide-y divide-line border-y border-line">
               {product.accessories.map((a) => (
-                <li key={a} className="py-3 text-sm">
+                <li key={a} className="flex items-center gap-3 py-3.5 text-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
                   {a}
                 </li>
               ))}
@@ -255,17 +300,21 @@ export default async function ProductPage({ params }: Params) {
           </div>
 
           <div>
-            <h2 className="mb-6 text-2xl font-bold tracking-tight">قطعات یدکی این مدل</h2>
+            <h2 className="mb-7 text-section font-extrabold">قطعات یدکی این مدل</h2>
             {parts.length ? (
               <ul className="divide-y divide-line border-y border-line">
                 {parts.map((p) => (
-                  <li key={p.partNo} className="flex items-center justify-between gap-4 py-3 text-sm">
+                  <li key={p.partNo} className="flex items-center justify-between gap-4 py-3.5 text-sm">
                     <span>
-                      <span className="block">{p.title}</span>
+                      <span className="block font-medium">{p.title}</span>
                       <span className="num block text-xs text-muted">{p.partNo}</span>
                     </span>
-                    <span className="shrink-0 text-xs text-muted">
-                      {p.inStock ? <span className="text-accent">موجود</span> : "استعلامی"}
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        p.inStock ? "bg-accent-soft text-accent" : "bg-ink/[0.05] text-muted"
+                      }`}
+                    >
+                      {p.inStock ? "موجود" : "استعلامی"}
                     </span>
                   </li>
                 ))}
@@ -273,25 +322,27 @@ export default async function ProductPage({ params }: Params) {
             ) : (
               <p className="text-sm text-muted">قطعات این مدل با استعلام تأمین می‌شود.</p>
             )}
-            <Link href="/spare-parts" className="btn-ghost mt-5">
-              جستجوی کامل قطعات
+            <Link href="/spare-parts" className="btn-ghost btn-sm mt-6">
+              جستجوی کامل قطعات ←
             </Link>
           </div>
         </div>
       </section>
 
       {/* پرسش‌های متداول */}
-      <section id="faq" className="border-y border-line bg-surface py-14">
-        <div className="shell scroll-mt-32 max-w-3xl">
-          <h2 className="mb-8 text-2xl font-bold tracking-tight">پرسش‌های متداول</h2>
+      <section id="faq" className="border-y border-line bg-surface py-20">
+        <div className="shell max-w-3xl scroll-mt-32">
+          <h2 className="mb-9 text-section font-extrabold">پرسش‌های متداول</h2>
           <div className="divide-y divide-line border-y border-line">
             {product.faqs.map((f) => (
-              <details key={f.q} className="group py-4">
-                <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm font-medium">
+              <details key={f.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
                   {f.q}
-                  <span className="text-muted transition-transform group-open:rotate-45">+</span>
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-line text-muted transition-all duration-300 group-open:rotate-45 group-open:border-accent group-open:text-accent">
+                    +
+                  </span>
                 </summary>
-                <p className="mt-3 text-sm leading-7 text-muted">{f.a}</p>
+                <p className="mt-4 text-sm leading-8 text-muted">{f.a}</p>
               </details>
             ))}
           </div>
@@ -300,11 +351,13 @@ export default async function ProductPage({ params }: Params) {
 
       {/* محصولات مرتبط */}
       {related.length > 0 && (
-        <section className="shell py-14">
-          <h2 className="mb-8 text-2xl font-bold tracking-tight">دستگاه‌های مرتبط</h2>
+        <section className="shell py-20">
+          <h2 className="mb-9 text-section font-extrabold">دستگاه‌های مرتبط</h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((p) => (
-              <ProductCard key={p.slug} product={p} />
+            {related.map((p, i) => (
+              <Reveal key={p.slug} delay={i * 70}>
+                <ProductCard product={p} />
+              </Reveal>
             ))}
           </div>
         </section>
