@@ -17,6 +17,7 @@ cd "$ROOT" || exit 1
 
 RED=$'\033[31m'; GRN=$'\033[32m'; YLW=$'\033[33m'; DIM=$'\033[2m'; BLD=$'\033[1m'; RST=$'\033[0m'
 FAILURES=(); WARNINGS=()
+STALE_PROCESS=0; DEV_MODE=0
 
 section() { printf '\n%s──── %s %s\n' "$BLD" "$1" "$RST"; }
 ok()      { printf '  %s✓%s %s\n' "$GRN" "$RST" "$1"; }
@@ -135,6 +136,30 @@ else
   done
 
   grep -q 'dir="rtl"' "$HTML_FILE" && ok "جهت RTL روی <html> ست شده" || bad "dir=\"rtl\" روی <html> نیست"
+
+  # ── مهم‌ترین تست: آیا پروسه در حال اجرا، همین build را سرو می‌کند؟
+  #
+  # پروسه‌ای که از قبل روی پورت مانده، بعد از build جدید همچنان .next قدیمی
+  # را از حافظه سرو می‌کند: بعضی مسیرها ۲۰۰ می‌دهند و بعضی ۵۰۰، و چانک‌ها ۴۰۴
+  # می‌شوند. از بیرون شبیه «سایت خراب» است، در حالی که کد و build سالم‌اند.
+  if [[ -f .next/BUILD_ID ]]; then
+    DISK_BUILD_ID="$(cat .next/BUILD_ID)"
+    if grep -qF "$DISK_BUILD_ID" "$HTML_FILE"; then
+      ok "شناسه build صفحه با build روی دیسک یکی است"
+    else
+      bad "پروسه در حال اجرا build دیگری را سرو می‌کند (build دیسک: $DISK_BUILD_ID)"
+      note "یعنی یک پروسه قدیمی روی پورت مانده. راه‌حل در انتهای گزارش."
+      STALE_PROCESS=1
+    fi
+  fi
+
+  # اسم چانک بدون هش یعنی حالت توسعه؛ روی سرور نباید «next dev» اجرا شود.
+  if grep -qE '/_next/static/chunks/(main-app|polyfills|app-pages-internals)\.js' "$HTML_FILE"; then
+    bad "سرور در حالت توسعه (next dev) اجرا شده، نه production"
+    note "next dev کند است، کش ندارد و بعد از build جدید خطای ۵۰۰ می‌دهد."
+    note "راه‌حل: با «npm start» یا pm2 اجرا کنید، نه «npm run dev»."
+    DEV_MODE=1
+  fi
 fi
 
 # ────────────────────────────────────────────────────────────── ۳. پروسه‌ها
@@ -174,6 +199,10 @@ RUNNING="$(pgrep -af 'next-server|next start' 2>/dev/null | grep -v diagnose | h
 if command -v pm2 >/dev/null 2>&1; then
   note "pm2:"
   pm2 list 2>/dev/null | sed 's/^/    /' | head -12
+  if pm2 list 2>/dev/null | grep -qE 'errored|stopped'; then
+    bad "یک پروسه pm2 در وضعیت errored/stopped است — بالا نیامده و پروسه دیگری جای آن پاسخ می‌دهد"
+    STALE_PROCESS=1
+  fi
 fi
 
 # ────────────────────────────────────────────── ۵. فایل‌های استاتیک صفحه
@@ -278,6 +307,14 @@ if (( ${#FAILURES[@]} == 0 )); then
 else
   printf '  %s%d مشکل پیدا شد:%s\n' "$RED" "${#FAILURES[@]}" "$RST"
   for f in "${FAILURES[@]}"; do printf '    • %s\n' "$f"; done
+
+  if (( STALE_PROCESS == 1 || DEV_MODE == 1 )); then
+    printf '\n  %sعلت اصلی: یک پروسه قدیمی روی پورت مانده و build فعلی را سرو نمی‌کند.%s\n' "$BLD" "$RST"
+    printf '  همه پروسه‌ها را ببندید و تمیز از نو بالا بیاورید:\n\n'
+    printf '    pm2 delete all; pkill -f next-server; pkill -f "next dev"; pkill -f "next start"\n'
+    printf '    sleep 2 && rm -rf .next && npm run build\n'
+    printf '    pm2 start npm --name artaclean -- start && pm2 save\n'
+  fi
 fi
 
 if (( ${#WARNINGS[@]} > 0 )); then
