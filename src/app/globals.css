@@ -408,3 +408,30 @@
     transform: none;
   }
 }
+
+/* ------------------------------------------------------------------ چاپ */
+/* فیش حقوقی باید تنها با یک Ctrl+P چاپ شود؛ بقیه صفحه (هدر، فرم، نوارهای
+   شناور) در خروجی چاپ حذف می‌شود بدون آنکه لازم باشد آن کامپوننت‌ها
+   کلاس بگیرند. */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  body * {
+    visibility: hidden;
+    box-shadow: none !important;
+  }
+
+  .payslip,
+  .payslip * {
+    visibility: visible;
+  }
+
+  .payslip {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    border: none;
+  }
+}
