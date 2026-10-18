@@ -30,12 +30,20 @@ npm run typecheck
 | سه‌بعدی | Three.js + React Three Fiber + Drei |
 | وضعیت کلاینت | Zustand |
 | پایگاه داده | `node:sqlite` داخلی Node — بدون وابستگی بومی |
+| Node | ۲۴ یا بالاتر (`.nvmrc` و `engines` پین شده‌اند) |
 | تصاویر | `sharp` (تبدیل به WebP) |
 | رمز و نشست | `node:crypto` (scrypt) |
 | فرم‌ها | Server Actions |
 
-نکته نسخه Node: `node:sqlite` از Node 22.5 در دسترس است. روی Node 22 با هشدار
-`ExperimentalWarning` کار می‌کند؛ برای حذف هشدار، Node 24 یا بالاتر.
+**Node 24 الزامی است.** `node:sqlite` از Node 22.5 در دسترس شد ولی تا Node 23
+پشت پرچم experimental بود و هر اجرا هشدار چاپ می‌کرد؛ در Node 24 پایدار شده.
+روی Node 22 پروژه اجرا می‌شود اما لاگ سرور پر از `ExperimentalWarning` می‌ماند
+و رفتار API تضمین‌شده نیست.
+
+```bash
+# اوبونتو — ارتقا به Node 24
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash - && sudo apt install -y nodejs
+```
 
 ---
 

@@ -43,10 +43,16 @@ NODE_V="$(node -v 2>/dev/null || echo "نصب نیست")"
 NODE_MAJOR="$(printf '%s' "$NODE_V" | sed -E 's/^v([0-9]+).*/\1/')"
 if [[ "$NODE_V" == "نصب نیست" ]]; then
   bad "Node.js نصب نیست"
-elif [[ "$NODE_MAJOR" =~ ^[0-9]+$ ]] && (( NODE_MAJOR >= 20 )); then
+elif [[ ! "$NODE_MAJOR" =~ ^[0-9]+$ ]]; then
+  bad "نسخه Node قابل تشخیص نیست ($NODE_V)"
+elif (( NODE_MAJOR >= 24 )); then
   ok "Node $NODE_V"
+elif (( NODE_MAJOR >= 22 )); then
+  # روی ۲۲ کار می‌کند ولی node:sqlite آنجا experimental است و هر اجرا
+  # هشدار می‌دهد؛ روی ۲۴ پایدار شده.
+  warn "Node $NODE_V — کار می‌کند، ولی این پروژه Node 24 می‌خواهد (node:sqlite روی ۲۲ experimental است)"
 else
-  bad "Node $NODE_V — این پروژه حداقل Node 20 می‌خواهد (Node 18 روی Next 15 خطاهای عجیب می‌دهد)"
+  bad "Node $NODE_V — این پروژه حداقل Node 24 می‌خواهد (node:sqlite زیر Node 22.5 اصلاً وجود ندارد)"
 fi
 
 if [[ -d node_modules ]]; then
