@@ -4,9 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { useCompare } from "@/components/compare/CompareProvider";
+import { useCompare } from "@/store/compare";
 import SearchDialog from "@/components/layout/SearchDialog";
 import { megaProducts, megaServices, megaSolutions, primaryNav } from "@/lib/nav";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type MegaKey = "products" | "solutions" | "services";
 
@@ -196,7 +198,13 @@ export default function Header() {
               )}
             </Link>
 
-            <Link href="/quote" className={`hidden sm:inline-flex ${solid ? "btn-accent btn-sm" : "btn-glass btn-sm"}`}>
+            <Link
+              href="/quote"
+              className={cn(
+                buttonVariants({ variant: solid ? "accent" : "glass", size: "sm" }),
+                "hidden sm:inline-flex",
+              )}
+            >
               درخواست مشاوره
             </Link>
           </div>
@@ -273,10 +281,10 @@ function MegaPanel({ which }: { which: MegaKey }) {
             اگر مدل دستگاه را نمی‌دانید، با چهار پرسش درباره سطح، آلودگی و متراژ، گزینه‌های مناسب
             سایت شما را فهرست می‌کنیم.
           </p>
-          <Link href="/advisor" className="btn-accent btn-sm mt-6 w-full">
+          <Link href="/advisor" className={cn(buttonVariants({ variant: "accent", size: "sm" }), "mt-6 w-full")}>
             پیدا کردن دستگاه
           </Link>
-          <Link href="/quote" className="btn-glass btn-sm mt-2 w-full">
+          <Link href="/quote" className={cn(buttonVariants({ variant: "glass", size: "sm" }), "mt-2 w-full")}>
             مشاوره با کارشناس
           </Link>
         </div>
@@ -298,12 +306,12 @@ function MobileNav({ onClose, onSearch }: { onClose: () => void; onSearch: () =>
         </div>
 
         <div className="relative flex-1 overflow-y-auto px-5 py-5">
-          <button type="button" onClick={() => { onClose(); onSearch(); }} className="btn-glass btn-sm mb-3 w-full justify-start gap-2">
+          <button type="button" onClick={() => { onClose(); onSearch(); }} className={cn(buttonVariants({ variant: "glass", size: "sm" }), "mb-3 w-full justify-start gap-2")}>
             <SearchIcon />
             جستجوی محصول، قطعه یا راهنما
           </button>
 
-          <Link href="/advisor" className="btn-accent mb-6 w-full" onClick={onClose}>
+          <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "mb-6 w-full")} onClick={onClose}>
             پیدا کردن دستگاه مناسب
           </Link>
 

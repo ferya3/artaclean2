@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { COMPARE_MAX, useCompare } from "@/components/compare/CompareProvider";
+import { COMPARE_MAX, useCompare } from "@/store/compare";
 import { getProduct } from "@/lib/data/products";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /** نوار شناور مقایسه — تا وقتی چیزی انتخاب نشده، اصلاً وجود ندارد. */
 export default function CompareBar() {
@@ -51,7 +53,7 @@ export default function CompareBar() {
         >
           پاک کردن
         </button>
-        <Link href="/compare" className="btn-accent btn-sm">
+        <Link href="/compare" className={buttonVariants({ variant: "accent", size: "sm" })}>
           مقایسه کن ←
         </Link>
       </div>

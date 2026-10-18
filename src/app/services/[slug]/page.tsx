@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { getService, services } from "@/lib/data/services";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -63,10 +65,10 @@ export default async function ServicePage({ params }: Params) {
             <p className="mt-2 text-sm leading-7 text-muted">
               مدل دستگاه و شهر محل استفاده را بفرستید تا زمان و هزینه اعلام شود.
             </p>
-            <Link href={`/quote?service=${service.slug}`} className="btn-accent mt-4 w-full">
+            <Link href={`/quote?service=${service.slug}`} className={cn(buttonVariants({ variant: "accent" }), "mt-4 w-full")}>
               ثبت درخواست
             </Link>
-            <a href="tel:+982100000000" className="btn-ghost num mt-2 w-full" dir="ltr">
+            <a href="tel:+982100000000" className={cn(buttonVariants({ variant: "outline" }), "num mt-2 w-full")} dir="ltr">
               021-0000 0000
             </a>
           </div>

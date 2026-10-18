@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import QuoteForm from "@/components/quote/QuoteForm";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { getProduct } from "@/lib/data/products";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "درخواست پیش‌فاکتور و مشاوره",
@@ -65,7 +67,7 @@ export default async function QuotePage({ searchParams }: Search) {
             <p className="mt-2 text-sm leading-7 text-muted">
               برای خرید صنعتی، یک تماس ده‌دقیقه‌ای معمولاً از پر کردن ده فرم مفیدتر است.
             </p>
-            <a href="tel:+982100000000" className="btn-primary num mt-4 w-full" dir="ltr">
+            <a href="tel:+982100000000" className={cn(buttonVariants({ variant: "primary" }), "num mt-4 w-full")} dir="ltr">
               021-0000 0000
             </a>
           </div>

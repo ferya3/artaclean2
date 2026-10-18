@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
+import { buttonVariants } from "@/components/ui/button";
+import { chipVariants } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "نمایندگی‌ها و مراکز خدمات",
@@ -79,7 +82,7 @@ export default function RepresentativesPage() {
             </a>
             <ul className="mt-4 flex flex-wrap gap-1.5">
               {o.services.map((s) => (
-                <li key={s} className="chip">
+                <li key={s} className={chipVariants({ interactive: true })}>
                   {s}
                 </li>
               ))}
@@ -93,7 +96,7 @@ export default function RepresentativesPage() {
           <p className="max-w-xl text-sm leading-7">
             در شهر شما نماینده نداریم؟ سرویس در محل با اعزام تکنسین از نزدیک‌ترین مرکز انجام می‌شود.
           </p>
-          <Link href="/company/contact" className="btn-primary">
+          <Link href="/company/contact" className={buttonVariants({ variant: "primary" })}>
             تماس با ما
           </Link>
         </div>

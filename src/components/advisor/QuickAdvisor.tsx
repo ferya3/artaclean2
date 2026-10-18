@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { areaLabels, dirtLabels, frequencyLabels, surfaceLabels } from "@/lib/data/taxonomy";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const FIELDS = [
   { key: "surface", label: "چه سطحی را تمیز می‌کنید؟", options: surfaceLabels },
@@ -81,7 +83,7 @@ export default function QuickAdvisor() {
         ))}
 
         <div className="flex items-end">
-          <button type="submit" className="btn-accent w-full py-3">
+          <button type="submit" className={cn(buttonVariants({ variant: "accent" }), "w-full py-3")}>
             {answered > 0 ? "دیدن پیشنهادها" : "شروع کنید"}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path d="M14 6l-6 6 6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />

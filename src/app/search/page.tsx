@@ -5,6 +5,9 @@ import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { areaLabels, dirtLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
 import { extractIntent, groupHits, groupLabels, search } from "@/lib/search";
+import { buttonVariants } from "@/components/ui/button";
+import { chipVariants } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "جستجو",
@@ -48,12 +51,12 @@ export default async function SearchPage({ searchParams }: Search) {
             <div>
               <p className="font-semibold">از جمله شما این را فهمیدیم</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                {intent.surface && <span className="chip bg-surface">{surfaceLabels[intent.surface]}</span>}
-                {intent.dirt && <span className="chip bg-surface">{dirtLabels[intent.dirt]}</span>}
-                {intent.area && <span className="chip bg-surface">{areaLabels[intent.area]}</span>}
+                {intent.surface && <span className={cn(chipVariants({ interactive: true }), "bg-surface")}>{surfaceLabels[intent.surface]}</span>}
+                {intent.dirt && <span className={cn(chipVariants({ interactive: true }), "bg-surface")}>{dirtLabels[intent.dirt]}</span>}
+                {intent.area && <span className={cn(chipVariants({ interactive: true }), "bg-surface")}>{areaLabels[intent.area]}</span>}
               </div>
             </div>
-            <Link href={`/advisor?${advisorParams.toString()}`} className="btn-accent">
+            <Link href={`/advisor?${advisorParams.toString()}`} className={buttonVariants({ variant: "accent" })}>
               دیدن دستگاه‌های پیشنهادی
             </Link>
           </div>
@@ -65,7 +68,7 @@ export default async function SearchPage({ searchParams }: Search) {
             <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted">
               به‌جای نام دقیق دستگاه، مسئله‌تان را بنویسید — مثلاً «روغن روی کف کارخانه ۵۰۰۰ متر».
             </p>
-            <Link href="/advisor" className="btn-accent mt-6">
+            <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "mt-6")}>
               مشاور انتخاب دستگاه
             </Link>
           </div>

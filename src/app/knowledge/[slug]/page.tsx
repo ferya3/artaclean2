@@ -6,6 +6,8 @@ import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { articleKindLabels, articles, getArticle } from "@/lib/data/knowledge";
 import { categories } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -66,7 +68,7 @@ export default async function ArticlePage({ params }: Params) {
               اگر می‌خواهید همین را روی سایت خودتان اعمال کنید، شرایط را وارد کنید تا فهرست کوتاه
               دستگاه‌های مناسب را ببینید.
             </p>
-            <Link href="/advisor" className="btn-accent">
+            <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
               پیدا کردن دستگاه
             </Link>
           </div>

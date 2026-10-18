@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 import QuickAdvisor from "@/components/advisor/QuickAdvisor";
+import ProcessScroll from "@/components/home/ProcessScroll";
 import ProductCard from "@/components/product/ProductCard";
+import HeroStage from "@/components/three/HeroStage";
 import ProductVisual from "@/components/ui/ProductVisual";
-import Reveal from "@/components/ui/Reveal";
+import Reveal from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/ui/Primitives";
 import { brands } from "@/lib/data/brands";
 import { industries } from "@/lib/data/industries";
@@ -12,6 +14,8 @@ import { products } from "@/lib/data/products";
 import { services } from "@/lib/data/services";
 import { categories } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const FEATURED = ["vertex-r850", "arta-s700", "arta-w800", "vertex-ax60"];
 
@@ -74,10 +78,10 @@ export default function HomePage() {
               {/* روی موبایل تمام‌عرض و روی هم؛ wrap ساده باعث می‌شد دکمه دوم
                   با عرض متفاوت، پله‌ای و نامرتب بنشیند. */}
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Link href="/advisor" className="btn-accent w-full px-6 py-3.5 text-[15px] sm:w-auto">
+                <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "w-full px-6 py-3.5 text-[15px] sm:w-auto")}>
                   دستگاه مناسبم را پیدا کن
                 </Link>
-                <Link href="/products" className="btn-glass w-full px-6 py-3.5 text-[15px] sm:w-auto">
+                <Link href="/products" className={cn(buttonVariants({ variant: "glass" }), "w-full px-6 py-3.5 text-[15px] sm:w-auto")}>
                   مشاهده تجهیزات
                 </Link>
               </div>
@@ -101,19 +105,12 @@ export default function HomePage() {
 
           {/* دستگاه شاخص + پلاک‌های مشخصات شناور */}
           <Reveal delay={200} className="lg:col-span-6">
-            <div className="relative animate-float-soft">
+            <div className="relative">
               <div
                 className="glow inset-x-10 top-10 h-64 opacity-25"
                 style={{ background: "rgb(var(--c-accent))" }}
               />
-              <ProductVisual
-                kind="floor-scrubbers"
-                variant="ride-on"
-                tone="deep"
-                ratio="aspect-[4/3]"
-                label="اسکرابر سرنشین‌دار"
-                className="rounded-xl2 border border-white/10"
-              />
+              <HeroStage />
 
               {/* هر دو پلاک سمت start می‌نشینند: بدنه دستگاه به سمت end متمایل
                   است و پلاک شناور نباید روی خطوط طرح بیفتد. */}
@@ -166,7 +163,7 @@ export default function HomePage() {
             title="دسته‌بندی تجهیزات"
             lead="اگر می‌دانید دنبال چه نوع دستگاهی هستید، از اینجا شروع کنید."
             action={
-              <Link href="/products" className="btn-ghost btn-sm">
+              <Link href="/products" className={buttonVariants({ variant: "outline", size: "sm" })}>
                 همه دسته‌ها ←
               </Link>
             }
@@ -202,7 +199,7 @@ export default function HomePage() {
               title="پرکاربردترین دستگاه‌ها"
               lead="مدل‌هایی که بیشترین تناسب را با سایت‌های صنعتی ایران داشته‌اند."
               action={
-                <Link href="/products" className="btn-ghost btn-sm">
+                <Link href="/products" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   همه محصولات ←
                 </Link>
               }
@@ -232,7 +229,7 @@ export default function HomePage() {
               title="اگر مدل دستگاه را نمی‌دانید، از مسئله شروع کنید"
               lead="هر صنعت، ترکیب آلودگی و محدودیت خودش را دارد. راهکار را از همان‌جا می‌بندیم."
               action={
-                <Link href="/solutions" className="btn-glass btn-sm">
+                <Link href="/solutions" className={buttonVariants({ variant: "glass", size: "sm" })}>
                   همه راهکارها ←
                 </Link>
               }
@@ -263,7 +260,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════ 06 — چرا ما */}
+      {/* ════════════════════════════ ۰۶ — مسیر کار (اسکرول افقی pin‌شده) */}
+      <ProcessScroll />
+
+      {/* ══════════════════════════════════════════════ 07 — چرا ما */}
       <section className="shell py-20">
         <Reveal>
           <SectionHeading
@@ -293,7 +293,7 @@ export default function HomePage() {
               title="پروژه‌های اجراشده"
               lead="مشخصات سایت، دستگاه انتخاب‌شده و نتیجه — به‌جای شعار."
               action={
-                <Link href="/company/projects" className="btn-ghost btn-sm">
+                <Link href="/company/projects" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   همه پروژه‌ها ←
                 </Link>
               }
@@ -326,7 +326,7 @@ export default function HomePage() {
             title="نصب، سرویس، تعمیر، قطعات، آموزش، اجاره"
             lead="برای تجهیزات صنعتی، خدمات پس از فروش بخشی از فروش است، نه یک صفحه فرعی."
             action={
-              <Link href="/services" className="btn-ghost btn-sm">
+              <Link href="/services" className={buttonVariants({ variant: "outline", size: "sm" })}>
                 همه خدمات ←
               </Link>
             }
@@ -353,7 +353,7 @@ export default function HomePage() {
               eyebrow="راهنما"
               title="پیش از خرید، این‌ها را بخوانید"
               action={
-                <Link href="/knowledge" className="btn-ghost btn-sm">
+                <Link href="/knowledge" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   همه مقالات ←
                 </Link>
               }
@@ -392,10 +392,10 @@ export default function HomePage() {
               نظافت را دریافت کنید.
             </p>
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
-              <Link href="/advisor" className="btn-accent w-full px-7 py-3.5 text-[15px] sm:w-auto">
+              <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "w-full px-7 py-3.5 text-[15px] sm:w-auto")}>
                 شروع مشاور انتخاب
               </Link>
-              <Link href="/quote" className="btn-glass w-full px-7 py-3.5 text-[15px] sm:w-auto">
+              <Link href="/quote" className={cn(buttonVariants({ variant: "glass" }), "w-full px-7 py-3.5 text-[15px] sm:w-auto")}>
                 درخواست پیش‌فاکتور
               </Link>
             </div>

@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { specValue } from "@/lib/format";
 import type { SpecGroup } from "@/lib/types";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * مشخصات فنی نباید یک جدول عظیم و وحشتناک باشد.
@@ -30,7 +32,7 @@ export default function SpecSheet({ groups }: { groups: SpecGroup[] }) {
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="btn-ghost mt-5 w-full sm:w-auto"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
             aria-expanded={expanded}
           >
             {expanded ? "بستن مشخصات کامل" : "مشخصات کامل"}

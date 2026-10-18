@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 
 import CompareBar from "@/components/compare/CompareBar";
-import { CompareProvider } from "@/components/compare/CompareProvider";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import StickyCta from "@/components/layout/StickyCta";
+import SmoothScroll from "@/components/providers/SmoothScroll";
 
+// فونت لوکال از node_modules سرو می‌شود، نه از CDN — سایت دیگر به دسترسی
+// مرورگر کاربر به jsDelivr وابسته نیست.
+import "@fontsource-variable/vazirmatn";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -27,13 +30,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fa" dir="rtl">
       <body className="flex min-h-screen flex-col">
-        <CompareProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <CompareBar />
-          <StickyCta />
-        </CompareProvider>
+        <SmoothScroll />
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <CompareBar />
+        <StickyCta />
       </body>
     </html>
   );

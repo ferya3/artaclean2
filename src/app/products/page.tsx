@@ -3,10 +3,12 @@ import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import ProductVisual from "@/components/ui/ProductVisual";
-import Reveal from "@/components/ui/Reveal";
+import Reveal from "@/components/motion/Reveal";
 import { productsByCategory } from "@/lib/data/products";
 import { categories, categoryGroups } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "تجهیزات نظافت صنعتی",
@@ -23,10 +25,10 @@ export default function ProductsPage() {
         lead="دسته‌بندی بر اساس نوع کار: نظافت کف، فشار بالا، تخصصی و مصرفی. اگر نمی‌دانید کدام دسته به کار شما می‌آید، از مشاور انتخاب دستگاه شروع کنید."
       >
         <div className="flex flex-wrap gap-3">
-          <Link href="/advisor" className="btn-accent">
+          <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
             پیدا کردن دستگاه مناسب
           </Link>
-          <Link href="/solutions" className="btn-ghost">
+          <Link href="/solutions" className={buttonVariants({ variant: "outline" })}>
             انتخاب بر اساس صنعت
           </Link>
         </div>

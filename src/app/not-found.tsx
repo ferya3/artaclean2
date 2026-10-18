@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
@@ -15,13 +17,13 @@ export default function NotFound() {
           شاید آدرس تغییر کرده باشد. از اینجا ادامه دهید:
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <Link href="/advisor" className="btn-accent px-6 py-3.5">
+          <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "px-6 py-3.5")}>
             پیدا کردن دستگاه
           </Link>
-          <Link href="/products" className="btn-glass px-6 py-3.5">
+          <Link href="/products" className={cn(buttonVariants({ variant: "glass" }), "px-6 py-3.5")}>
             تجهیزات
           </Link>
-          <Link href="/spare-parts" className="btn-glass px-6 py-3.5">
+          <Link href="/spare-parts" className={cn(buttonVariants({ variant: "glass" }), "px-6 py-3.5")}>
             قطعات یدکی
           </Link>
         </div>

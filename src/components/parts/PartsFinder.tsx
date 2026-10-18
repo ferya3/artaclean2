@@ -7,6 +7,8 @@ import { partCategories, spareParts } from "@/lib/data/parts";
 import { products } from "@/lib/data/products";
 import { fa, toman } from "@/lib/format";
 import { normalize } from "@/lib/search";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * قطعات یدکی مسیر خرید خودش را دارد: کاربر معمولاً از مدل دستگاه یا
@@ -135,7 +137,7 @@ export default function PartsFinder({ initialQuery = "" }: { initialQuery?: stri
             شماره فنی روی پلاک دستگاه یا عکس قطعه را برای ما بفرستید؛ اگر در فهرست نباشد، زمان تأمین را
             اعلام می‌کنیم.
           </p>
-          <Link href="/quote" className="btn-primary mt-5">
+          <Link href="/quote" className={cn(buttonVariants({ variant: "primary" }), "mt-5")}>
             استعلام قطعه
           </Link>
         </div>

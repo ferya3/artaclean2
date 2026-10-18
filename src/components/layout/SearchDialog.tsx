@@ -6,6 +6,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { extractIntent, groupHits, groupLabels, search } from "@/lib/search";
 import { areaLabels, dirtLabels, surfaceLabels } from "@/lib/data/taxonomy";
+import { buttonVariants } from "@/components/ui/button";
+import { chipVariants } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
   "روغن روی کف کارخانه",
@@ -68,7 +71,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
               placeholder="نام دستگاه، شماره فنی قطعه، یا مسئله‌تان را بنویسید…"
               className="h-14 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
             />
-            <button type="button" onClick={onClose} className="btn-quiet px-2 text-xs">
+            <button type="button" onClick={onClose} className={cn(buttonVariants({ variant: "quiet" }), "px-2 text-xs")}>
               ESC
             </button>
           </form>
@@ -78,11 +81,11 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
               <div className="border-b border-line bg-accent-soft/60 px-4 py-3">
                 <p className="text-xs text-muted">از جمله شما این را فهمیدیم:</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  {intent.surface && <span className="chip bg-surface">{surfaceLabels[intent.surface]}</span>}
-                  {intent.dirt && <span className="chip bg-surface">{dirtLabels[intent.dirt]}</span>}
-                  {intent.area && <span className="chip bg-surface">{areaLabels[intent.area]}</span>}
+                  {intent.surface && <span className={cn(chipVariants({ interactive: true }), "bg-surface")}>{surfaceLabels[intent.surface]}</span>}
+                  {intent.dirt && <span className={cn(chipVariants({ interactive: true }), "bg-surface")}>{dirtLabels[intent.dirt]}</span>}
+                  {intent.area && <span className={cn(chipVariants({ interactive: true }), "bg-surface")}>{areaLabels[intent.area]}</span>}
                 </div>
-                <Link href={advisorHref} onClick={onClose} className="btn-accent mt-3 w-full text-sm">
+                <Link href={advisorHref} onClick={onClose} className={cn(buttonVariants({ variant: "accent" }), "mt-3 w-full text-sm")}>
                   دیدن دستگاه‌های پیشنهادی برای این شرایط
                 </Link>
               </div>
@@ -93,7 +96,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
                 <p className="eyebrow mb-3">نمونه جستجو</p>
                 <div className="flex flex-wrap gap-2">
                   {SUGGESTIONS.map((s) => (
-                    <button key={s} type="button" onClick={() => setQuery(s)} className="chip hover:border-ink/30">
+                    <button key={s} type="button" onClick={() => setQuery(s)} className={cn(chipVariants({ interactive: true }), "hover:border-ink/30")}>
                       {s}
                     </button>
                   ))}

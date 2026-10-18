@@ -1,6 +1,8 @@
 "use client";
 
-import { useCompare } from "@/components/compare/CompareProvider";
+import { useCompare } from "@/store/compare";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function CompareToggle({
   slug,
@@ -14,14 +16,13 @@ export default function CompareToggle({
   const { has, toggle, full } = useCompare();
   const inCompare = has(slug);
 
-  const base =
-    tone === "deep"
-      ? inCompare
-        ? "btn border border-accent text-accent"
-        : "btn-glass"
-      : inCompare
-        ? "btn border border-accent bg-accent-soft text-accent"
-        : "btn-ghost";
+  const base = inCompare
+    ? cn(
+        buttonVariants({ variant: tone === "deep" ? "glass" : "outline" }),
+        "border-accent text-accent",
+        tone === "deep" ? "bg-transparent" : "bg-accent-soft",
+      )
+    : buttonVariants({ variant: tone === "deep" ? "glass" : "outline" });
 
   return (
     <button

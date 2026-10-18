@@ -7,6 +7,8 @@ import ProductCard from "@/components/product/ProductCard";
 import { recommend, recommendComplements, type AdvisorAnswers } from "@/lib/advisor";
 import { areaLabels, dirtLabels, frequencyLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type StepKey = keyof AdvisorAnswers;
 
@@ -126,7 +128,7 @@ export default function Advisor({ initial = {} }: { initial?: AdvisorAnswers }) 
             <button
               type="button"
               onClick={() => setAnswers({})}
-              className="btn-quiet mt-4 w-full text-xs"
+              className={cn(buttonVariants({ variant: "quiet" }), "mt-4 w-full text-xs")}
             >
               شروع دوباره
             </button>
@@ -149,7 +151,7 @@ export default function Advisor({ initial = {} }: { initial?: AdvisorAnswers }) 
               این معمولاً یعنی شرایط سایت شما راهکار ترکیبی می‌خواهد. شرایط را برای کارشناس بفرستید تا
               پیکربندی مناسب پیشنهاد شود.
             </p>
-            <Link href="/quote" className="btn-accent mt-6">
+            <Link href="/quote" className={cn(buttonVariants({ variant: "accent" }), "mt-6")}>
               ارسال شرایط برای کارشناس
             </Link>
           </div>
@@ -231,7 +233,7 @@ export default function Advisor({ initial = {} }: { initial?: AdvisorAnswers }) 
                   شرایط سایت را بفرستید؛ کارشناس با دیتاشیت و برآورد زمان نظافت پاسخ می‌دهد.
                 </p>
               </div>
-              <Link href="/quote" className="btn bg-white text-ink hover:bg-white/90">
+              <Link href="/quote" className={cn(buttonVariants(), "bg-white text-ink hover:bg-white/90")}>
                 درخواست مشاوره
               </Link>
             </div>

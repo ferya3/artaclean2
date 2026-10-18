@@ -6,6 +6,8 @@ import { useState } from "react";
 import { areaLabels, dirtLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { industries } from "@/lib/data/industries";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * جریان B2B: خرید دستگاه صنعتی با «افزودن به سبد» تمام نمی‌شود.
@@ -91,10 +93,10 @@ export default function QuoteForm({ presetProduct }: { presetProduct?: string })
           تماس اول پیشنهاد فنی و برآورد زمان نظافت ارائه می‌شود.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/products" className="btn-ghost">
+          <Link href="/products" className={buttonVariants({ variant: "outline" })}>
             ادامه مرور تجهیزات
           </Link>
-          <Link href="/knowledge" className="btn-primary">
+          <Link href="/knowledge" className={buttonVariants({ variant: "primary" })}>
             راهنمای خرید
           </Link>
         </div>
@@ -310,7 +312,7 @@ export default function QuoteForm({ presetProduct }: { presetProduct?: string })
           type="button"
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0}
-          className="btn-quiet text-sm"
+          className={cn(buttonVariants({ variant: "quiet" }), "text-sm")}
         >
           مرحله قبل
         </button>
@@ -320,12 +322,12 @@ export default function QuoteForm({ presetProduct }: { presetProduct?: string })
             type="button"
             onClick={() => setStep((s) => s + 1)}
             disabled={!canContinue}
-            className="btn-primary"
+            className={buttonVariants({ variant: "primary" })}
           >
             مرحله بعد
           </button>
         ) : (
-          <button type="submit" disabled={!canContinue} className="btn-accent">
+          <button type="submit" disabled={!canContinue} className={buttonVariants({ variant: "accent" })}>
             ارسال درخواست پیش‌فاکتور
           </button>
         )}

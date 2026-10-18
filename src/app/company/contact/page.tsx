@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "تماس با ما",
@@ -58,7 +60,7 @@ export default function ContactPage() {
                 {c.email}
               </a>
             </div>
-            <Link href={c.cta.href} className="btn-ghost mt-5">
+            <Link href={c.cta.href} className={cn(buttonVariants({ variant: "outline" }), "mt-5")}>
               {c.cta.label}
             </Link>
           </div>

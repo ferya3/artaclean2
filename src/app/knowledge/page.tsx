@@ -5,6 +5,8 @@ import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { articleKindLabels, articles } from "@/lib/data/knowledge";
 import { fa } from "@/lib/format";
 import type { Article } from "@/lib/types";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "راهنمای خرید و مقالات",
@@ -22,7 +24,7 @@ export default function KnowledgePage() {
         title="راهنمای خرید و نظافت صنعتی"
         lead="نوشته‌هایی که قرار است در تصمیم خرید کمک کنند، نه اینکه محتوای سئویی پر کنند."
       >
-        <Link href="/advisor" className="btn-accent">
+        <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
           مشاور انتخاب دستگاه
         </Link>
       </PageHeader>

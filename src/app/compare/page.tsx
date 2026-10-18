@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { useCompare } from "@/components/compare/CompareProvider";
+import { useCompare } from "@/store/compare";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { recommendAmong } from "@/lib/advisor";
 import { getProduct, products } from "@/lib/data/products";
 import { areaLabels, machineTypeLabels, powerSourceLabels } from "@/lib/data/taxonomy";
 import { fa, specValue } from "@/lib/format";
 import type { AreaBand, Product, Spec } from "@/lib/types";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * موتور مقایسه.
@@ -45,7 +47,7 @@ export default function ComparePage() {
       <div className="shell pb-20">
         {picked.length > 0 && (
           <div className="mb-8 flex justify-end">
-            <button type="button" onClick={clear} className="btn-ghost btn-sm">
+            <button type="button" onClick={clear} className={buttonVariants({ variant: "outline", size: "sm" })}>
               پاک کردن فهرست
             </button>
           </div>
@@ -59,10 +61,10 @@ export default function ComparePage() {
               پیشنهاد بدهیم.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Link href="/advisor" className="btn-accent">
+              <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
                 پیدا کردن دستگاه مناسب
               </Link>
-              <Link href="/products" className="btn-ghost">
+              <Link href="/products" className={buttonVariants({ variant: "outline" })}>
                 مرور محصولات
               </Link>
             </div>
@@ -168,7 +170,7 @@ export default function ComparePage() {
                     <td />
                     {picked.map((p) => (
                       <td key={p.slug} className="border-s border-line px-4 py-5">
-                        <Link href={`/quote?product=${p.slug}`} className="btn-accent w-full text-sm">
+                        <Link href={`/quote?product=${p.slug}`} className={cn(buttonVariants({ variant: "accent" }), "w-full text-sm")}>
                           درخواست پیش‌فاکتور
                         </Link>
                       </td>

@@ -5,6 +5,8 @@ import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { industries } from "@/lib/data/industries";
 import { projects } from "@/lib/data/knowledge";
 import { getProduct } from "@/lib/data/products";
+import { chipVariants } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "پروژه‌های اجراشده",
@@ -32,7 +34,7 @@ export default function ProjectsPage() {
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <p className="eyebrow">{p.location}</p>
                 {industry && (
-                  <Link href={`/solutions/${industry.slug}`} className="chip hover:border-ink/30">
+                  <Link href={`/solutions/${industry.slug}`} className={cn(chipVariants({ interactive: true }), "hover:border-ink/30")}>
                     {industry.name}
                   </Link>
                 )}
@@ -52,7 +54,7 @@ export default function ProjectsPage() {
                       <li key={slug}>
                         <Link
                           href={`/products/${product.category}/${product.slug}`}
-                          className="chip hover:border-ink/30"
+                          className={cn(chipVariants({ interactive: true }), "hover:border-ink/30")}
                         >
                           {product.model}
                         </Link>

@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
-import { num } from "@/lib/format";
+import Counter from "@/components/motion/Counter";
 import { specRatio } from "@/lib/scale";
 import type { Spec } from "@/lib/types";
 
@@ -21,9 +19,10 @@ export default function KpiStrip({ kpis }: { kpis: Spec[] }) {
           <div key={spec.key} className="group bg-surface px-6 py-9 transition-colors hover:bg-canvas">
             {spec.value !== undefined ? (
               <p className="text-4xl font-black tracking-tight sm:text-5xl">
-                <span className="num bg-gradient-to-bl from-ink to-ink/55 bg-clip-text text-transparent">
-                  <CountUp to={spec.value} />
-                </span>
+                <Counter
+                  to={spec.value}
+                  className="num bg-linear-to-bl from-ink to-ink/55 bg-clip-text text-transparent"
+                />
                 {spec.unit && <span className="ms-1.5 text-base font-bold text-accent">{spec.unit}</span>}
               </p>
             ) : (
@@ -42,43 +41,4 @@ export default function KpiStrip({ kpis }: { kpis: Spec[] }) {
       })}
     </div>
   );
-}
-
-function CountUp({ to, duration = 1100 }: { to: number; duration?: number }) {
-  const [value, setValue] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const done = useRef(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setValue(to);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting || done.current) return;
-        done.current = true;
-        const start = performance.now();
-        const tick = (now: number) => {
-          const p = Math.min((now - start) / duration, 1);
-          // easeOutCubic — سریع شروع می‌شود، نرم می‌ایستد.
-          setValue(to * (1 - Math.pow(1 - p, 3)));
-          if (p < 1) requestAnimationFrame(tick);
-          else setValue(to);
-        };
-        requestAnimationFrame(tick);
-      },
-      { threshold: 0.4 },
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [to, duration]);
-
-  const display = Number.isInteger(to) ? Math.round(value) : Number(value.toFixed(1));
-  return <span ref={ref}>{num(display)}</span>;
 }

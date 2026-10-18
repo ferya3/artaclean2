@@ -1,72 +1,114 @@
-@import url("https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css");
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /*
-  سیستم بصری «Premium Industrial».
+  سیستم بصری «Premium Industrial» — Tailwind CSS 4.
+  در نسخه ۴ فایل tailwind.config حذف شده و توکن‌ها مستقیم در CSS تعریف می‌شوند.
+  هر متغیر داخل @theme به یک کلاس ترجمه می‌شود: --color-accent → bg-accent،
+  text-accent، border-accent و همه با پشتیبانی از opacity (bg-accent/20).
+
   دو سطح رنگی داریم، نه یکی: سطح روشن (کاتالوگ و متن) و سطح عمیق (Hero،
-  سکشن‌های تأکیدی و صفحه محصول). ریتم روشن/عمیق چیزی است که صفحه را از حالت
-  «فهرست بی‌پایان کارت» بیرون می‌آورد.
+  سربرگ صفحات و سکشن‌های تأکیدی). ریتم روشن/عمیق چیزی است که صفحه را از
+  حالت «فهرست بی‌پایان کارت» بیرون می‌آورد.
 */
-:root {
-  --font-fa: "Vazirmatn", "IRANSansX", "Peyda", "Dana", system-ui;
-  --font-num: "IBM Plex Mono", "Vazirmatn", ui-monospace;
+
+@theme {
+  --font-sans:
+    "Vazirmatn Variable", "Vazirmatn", "IRANSansX", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 
   /* سطح روشن */
-  --c-canvas: 245 245 242;
-  --c-surface: 255 255 255;
-  --c-ink: 13 15 18;
-  --c-muted: 104 110 118;
-  --c-line: 226 227 223;
+  --color-canvas: #f5f5f2;
+  --color-surface: #ffffff;
+  --color-ink: #0d0f12;
+  --color-muted: #686e76;
+  --color-line: #e2e3df;
 
   /* سطح عمیق — گرافیت صنعتی، نه مشکی مطلق */
-  --c-deep: 12 14 18;
-  --c-deep-2: 22 26 32;
-  --c-deep-3: 33 38 46;
-  --c-deep-line: 255 255 255;
+  --color-deep: #0c0e12;
+  --color-deep-2: #161a20;
+  --color-deep-3: #21262e;
 
   /* Accent صنعتی — تنها رنگ برند. کل سایت رنگ برند نمی‌شود. */
-  --c-accent: 255 106 26;
-  --c-accent-2: 226 74 8;
-  --c-accent-soft: 255 240 232;
+  --color-accent: #ff6a1a;
+  --color-accent-2: #e24a08;
+  --color-accent-soft: #fff0e8;
 
-  /* رنگ فنی برای نمودار مشخصات و حالت‌های ثانویه */
-  --c-steel: 96 148 196;
+  /* رنگ فنی برای حالت‌های ثانویه */
+  --color-steel: #6094c4;
 
-  --shadow-color: 13 15 18;
+  --text-display: clamp(1.9rem, 4.6vw, 3.5rem);
+  --text-display--line-height: 1.14;
+  --text-display--letter-spacing: -0.02em;
+  --text-hero: clamp(1.75rem, 3.6vw, 2.9rem);
+  --text-hero--line-height: 1.18;
+  --text-hero--letter-spacing: -0.015em;
+  --text-section: clamp(1.5rem, 2.5vw, 2.25rem);
+  --text-section--line-height: 1.22;
+  --text-section--letter-spacing: -0.01em;
+
+  --radius-card: 16px;
+  --radius-xl2: 22px;
+
+  --shadow-card: 0 1px 2px rgb(13 15 18 / 0.04), 0 18px 40px -24px rgb(13 15 18 / 0.35);
+  --shadow-lift: 0 30px 60px -30px rgb(13 15 18 / 0.45);
+  --shadow-pop: 0 34px 80px -32px rgb(13 15 18 / 0.55);
+  --shadow-glow: 0 20px 60px -24px rgb(255 106 26 / 0.55);
+
+  --container-shell: 1320px;
+
+  --animate-float-soft: float-soft 7s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    /* اسکرول نرم را Lenis مدیریت می‌کند؛ scroll-behavior بومی با آن تداخل دارد. */
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-canvas text-ink antialiased;
-    font-family: var(--font-fa), system-ui, sans-serif;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background: rgb(var(--c-accent) / 0.22);
-  }
-
-  /* اعداد مشخصات فنی: لاتین، tabular، بدون قوس. فقط برای مقدار عددی. */
-  .num {
-    font-family: var(--font-num);
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum" 1;
-    direction: ltr;
-    unicode-bidi: isolate;
+    background: --alpha(var(--color-accent) / 22%);
   }
 
   :focus-visible {
     outline: none;
     box-shadow:
-      0 0 0 2px rgb(var(--c-canvas)),
-      0 0 0 4px rgb(var(--c-accent));
+      0 0 0 2px var(--color-canvas),
+      0 0 0 4px var(--color-accent);
     border-radius: 6px;
   }
 
@@ -75,49 +117,60 @@
     height: 11px;
   }
   ::-webkit-scrollbar-track {
-    background: rgb(var(--c-canvas));
+    background: var(--color-canvas);
   }
   ::-webkit-scrollbar-thumb {
-    background: rgb(var(--c-ink) / 0.18);
-    border: 3px solid rgb(var(--c-canvas));
+    background: --alpha(var(--color-ink) / 18%);
+    border: 3px solid var(--color-canvas);
     border-radius: 99px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--c-ink) / 0.32);
+    background: --alpha(var(--color-ink) / 32%);
   }
 }
 
 @layer components {
   .shell {
-    @apply mx-auto w-full max-w-shell px-4 sm:px-6 lg:px-8;
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--container-shell);
+    padding-inline: --spacing(4);
   }
 
-  /* ---------------------------------------------------------------- سطوح */
+  @media (width >= 40rem) {
+    .shell {
+      padding-inline: --spacing(6);
+    }
+  }
+
+  @media (width >= 64rem) {
+    .shell {
+      padding-inline: --spacing(8);
+    }
+  }
 
   .card {
-    @apply relative rounded-card border border-line bg-surface;
+    position: relative;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
     transition:
-      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.4s var(--ease-out-expo),
+      box-shadow 0.4s var(--ease-out-expo),
       border-color 0.3s ease;
   }
 
   .card-hover:hover {
     transform: translateY(-4px);
-    border-color: rgb(var(--c-ink) / 0.14);
-    box-shadow:
-      0 1px 2px rgb(var(--shadow-color) / 0.04),
-      0 18px 40px -24px rgb(var(--shadow-color) / 0.35);
+    border-color: --alpha(var(--color-ink) / 14%);
+    box-shadow: var(--shadow-card);
   }
 
   /* کارت روی سطح عمیق */
   .card-deep {
-    @apply relative rounded-card;
-    background: linear-gradient(
-      160deg,
-      rgb(var(--c-deep-2)) 0%,
-      rgb(var(--c-deep)) 100%
-    );
+    position: relative;
+    border-radius: var(--radius-card);
+    background: linear-gradient(160deg, var(--color-deep-2) 0%, var(--color-deep) 100%);
     border: 1px solid rgb(255 255 255 / 0.08);
   }
 
@@ -127,123 +180,24 @@
     border: 1px solid rgb(255 255 255 / 0.1);
   }
 
-  /* ---------------------------------------------------------------- دکمه */
-
-  .btn {
-    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-semibold;
-    transition:
-      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.25s ease,
-      background-color 0.25s ease,
-      border-color 0.25s ease,
-      color 0.25s ease;
-  }
-
-  .btn:active {
-    transform: translateY(1px);
-  }
-
-  .btn:disabled {
-    @apply cursor-not-allowed opacity-45;
-    transform: none;
-  }
-
-  .btn-accent {
-    @apply btn text-white;
-    box-shadow: 0 10px 24px -12px rgb(var(--c-accent) / 0.85);
-  }
-
-  .btn-accent:hover:not(:disabled) {
-    box-shadow: 0 16px 32px -12px rgb(var(--c-accent) / 0.95);
-    transform: translateY(-2px);
-  }
-
-  /* درخشش عبوری — فقط روی CTA اصلی.
-     به‌صورت لایه پس‌زمینه اجرا می‌شود، نه overlay روی متن؛ overlay شفاف روی
-     حروف فارسی، نقطه‌های زیر «پ» و «ب» را می‌شوید. */
-  .btn-accent {
-    background-image:
-      linear-gradient(100deg, transparent 38%, rgb(255 255 255 / 0.26) 50%, transparent 62%),
-      linear-gradient(135deg, rgb(var(--c-accent)) 0%, rgb(var(--c-accent-2)) 100%);
-    background-size:
-      260% 100%,
-      100% 100%;
-    background-position:
-      140% 0,
-      0 0;
-    background-repeat: no-repeat;
-    transition:
-      background-position 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.25s ease;
-  }
-
-  .btn-accent:hover:not(:disabled) {
-    background-position:
-      -40% 0,
-      0 0;
-  }
-
-  .btn-primary {
-    @apply btn bg-ink text-white;
-  }
-  .btn-primary:hover:not(:disabled) {
-    background: rgb(var(--c-deep-2));
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px -16px rgb(var(--shadow-color) / 0.6);
-  }
-
-  .btn-ghost {
-    @apply btn border border-line bg-surface text-ink;
-  }
-  .btn-ghost:hover:not(:disabled) {
-    border-color: rgb(var(--c-ink) / 0.28);
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px -18px rgb(var(--shadow-color) / 0.5);
-  }
-
-  .btn-glass {
-    @apply btn glass text-white;
-  }
-  .btn-glass:hover:not(:disabled) {
-    background: rgb(255 255 255 / 0.13);
-    transform: translateY(-2px);
-  }
-
-  .btn-quiet {
-    @apply btn px-3 py-2 font-medium text-muted;
-  }
-  .btn-quiet:hover:not(:disabled) {
-    @apply bg-ink/[0.05] text-ink;
-  }
-
-  .btn-sm {
-    @apply px-3.5 py-2 text-[13px];
-  }
-
-  /* ------------------------------------------------------------- برچسب‌ها */
-
-  .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-muted;
-    transition:
-      border-color 0.25s ease,
-      color 0.25s ease,
-      background-color 0.25s ease;
-  }
-  .chip:hover {
-    @apply border-ink/25 text-ink;
-  }
-
   .eyebrow {
-    @apply text-[11px] font-bold uppercase tracking-[0.2em] text-muted;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-muted);
   }
 
   .eyebrow-accent {
-    @apply inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em];
-    color: rgb(var(--c-accent));
+    display: inline-flex;
+    align-items: center;
+    gap: --spacing(2);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-accent);
   }
-
-  /* --------------------------------------------------------------- بافت‌ها */
 
   /* دانه ظریف — چیزی که سطح تخت دیجیتال را «مادی» می‌کند */
   .grain::before {
@@ -271,7 +225,6 @@
     background-size: 56px 56px;
   }
 
-  /* هاله نور پشت Hero و سکشن‌های عمیق */
   .glow {
     position: absolute;
     border-radius: 9999px;
@@ -280,15 +233,17 @@
   }
 
   .section-deep {
-    @apply relative overflow-hidden text-white;
+    position: relative;
+    overflow: hidden;
+    color: white;
     /* بالای گرادیان دقیقاً هم‌رنگ هدر است تا درز دیده نشود */
     background:
-      radial-gradient(120% 90% at 80% -10%, rgb(var(--c-deep-3)) 0%, transparent 60%),
-      linear-gradient(180deg, rgb(var(--c-deep)) 0%, rgb(var(--c-deep-2)) 100%);
+      radial-gradient(120% 90% at 80% -10%, var(--color-deep-3) 0%, transparent 60%),
+      linear-gradient(180deg, var(--color-deep) 0%, var(--color-deep-2) 100%);
   }
 
   .gradient-text {
-    background: linear-gradient(120deg, rgb(var(--c-accent)) 0%, rgb(255 168 92) 100%);
+    background: linear-gradient(120deg, var(--color-accent) 0%, #ffa85c 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -296,7 +251,16 @@
 
   /* خط زیر لینک‌های ناوبری */
   .nav-link {
-    @apply relative inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: --spacing(1);
+    border-radius: 8px;
+    padding-inline: --spacing(3);
+    padding-block: --spacing(2);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.25s ease;
   }
   .nav-link::after {
     content: "";
@@ -305,10 +269,10 @@
     bottom: 2px;
     height: 2px;
     border-radius: 2px;
-    background: rgb(var(--c-accent));
+    background: var(--color-accent);
     transform: scaleX(0);
     transform-origin: inline-end;
-    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.32s var(--ease-out-expo);
   }
   .nav-link:hover::after,
   .nav-link[data-active="true"]::after {
@@ -316,81 +280,36 @@
     transform-origin: inline-start;
   }
 
-  /* نوار مشخصات — نسبت عدد به بیشینه دسته را بصری می‌کند */
+  /* نوار مشخصات — نسبت عدد به بیشینه کاتالوگ را بصری می‌کند */
   .spec-bar {
-    @apply relative h-1 overflow-hidden rounded-full;
-    background: rgb(var(--c-ink) / 0.07);
+    position: relative;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 9999px;
+    background: --alpha(var(--color-ink) / 7%);
   }
   .spec-bar > span {
-    @apply absolute inset-y-0 start-0 rounded-full;
-    background: linear-gradient(90deg, rgb(var(--c-accent)) 0%, rgb(var(--c-accent-2)) 100%);
-    transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .divider-soft {
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgb(var(--c-ink) / 0.1) 20%,
-      rgb(var(--c-ink) / 0.1) 80%,
-      transparent
-    );
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   }
 }
 
-@layer utilities {
-  /* ظاهر شدن هنگام ورود به viewport — کلاس‌ها را Reveal مدیریت می‌کند */
-  .reveal {
-    opacity: 0;
-    transform: translateY(22px);
-    transition:
-      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
-  }
-
-  .reveal-in {
-    opacity: 1;
-    transform: none;
-  }
-
-  .text-balance {
-    text-wrap: balance;
-  }
+@utility num {
+  /* اعداد مشخصات فنی: لاتین، tabular.
+     توجه: direction را به ltr می‌برد، پس هرگز روی عنصر absolute با
+     start/end استفاده نشود — جهت inset منطقی برعکس می‌شود. */
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
-@keyframes marquee-rtl {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(50%);
-  }
-}
-
-@keyframes float-soft {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.85);
-    opacity: 0.55;
-  }
-  70% {
-    transform: scale(1.35);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
+@utility text-balance {
+  text-wrap: balance;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -401,10 +320,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-
-  .reveal {
-    opacity: 1;
-    transform: none;
   }
 }

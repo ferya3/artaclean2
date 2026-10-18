@@ -8,6 +8,8 @@ import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { getArticle } from "@/lib/data/knowledge";
 import { productsByCategory } from "@/lib/data/products";
 import { categories, getCategory } from "@/lib/data/taxonomy";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ category: string }> };
 
@@ -39,11 +41,11 @@ export default async function CategoryPage({ params }: Params) {
       <PageHeader eyebrow={cat.latin} title={cat.name} lead={cat.blurb}>
         <div className="flex flex-wrap gap-3">
           {guide && (
-            <Link href={`/knowledge/${guide.slug}`} className="btn-ghost">
+            <Link href={`/knowledge/${guide.slug}`} className={buttonVariants({ variant: "outline" })}>
               راهنمای خرید {cat.name}
             </Link>
           )}
-          <Link href="/advisor" className="btn-accent">
+          <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
             پیشنهاد بر اساس شرایط سایت من
           </Link>
         </div>

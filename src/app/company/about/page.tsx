@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "درباره ما",
@@ -65,10 +67,10 @@ export default function AboutPage() {
               یک دستگاه را برای یک روز اجاره کنید و روی کف خودتان تست کنید. ارزان‌ترین راه برای
               نخریدن دستگاه اشتباه.
             </p>
-            <Link href="/services/rental" className="btn-primary mt-4 w-full">
+            <Link href="/services/rental" className={cn(buttonVariants({ variant: "primary" }), "mt-4 w-full")}>
               شرایط اجاره
             </Link>
-            <Link href="/company/projects" className="btn-ghost mt-2 w-full">
+            <Link href="/company/projects" className={cn(buttonVariants({ variant: "outline" }), "mt-2 w-full")}>
               پروژه‌های اجراشده
             </Link>
           </div>

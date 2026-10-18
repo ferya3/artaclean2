@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 
-import { useCompare } from "@/components/compare/CompareProvider";
-import { Badge, SpecBar } from "@/components/ui/Primitives";
+import { useCompare } from "@/store/compare";
+import { Badge } from "@/components/ui/card";
+import { SpecBar } from "@/components/ui/Primitives";
 import ProductVisual from "@/components/ui/ProductVisual";
 import { industries } from "@/lib/data/industries";
 import { specValue, toman } from "@/lib/format";
 import { specRatio, visualScale } from "@/lib/scale";
 import type { Product } from "@/lib/types";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * کارت محصول صنعتی.
@@ -50,7 +53,7 @@ export default function ProductCard({ product, compact = false }: { product: Pro
 
         <span className="absolute start-3 top-3 flex flex-wrap gap-1.5">
           {product.badges?.map((b) => (
-            <Badge key={b} tone="accent">
+            <Badge key={b} variant="accent">
               {b}
             </Badge>
           ))}
@@ -114,7 +117,7 @@ export default function ProductCard({ product, compact = false }: { product: Pro
           </div>
 
           <div className="flex gap-2">
-            <Link href={href} className="btn-primary btn-sm flex-1">
+            <Link href={href} className={cn(buttonVariants({ variant: "primary", size: "sm" }), "flex-1")}>
               مشاهده دستگاه
             </Link>
             <button
@@ -124,11 +127,11 @@ export default function ProductCard({ product, compact = false }: { product: Pro
               aria-pressed={inCompare}
               aria-label={inCompare ? "حذف از مقایسه" : "افزودن به مقایسه"}
               title={!inCompare && full ? "حداکثر ۴ دستگاه قابل مقایسه است" : "مقایسه"}
-              className={`btn btn-sm w-11 shrink-0 border px-0 ${
-                inCompare
-                  ? "border-accent bg-accent-soft text-accent"
-                  : "border-line bg-surface text-muted hover:border-ink/25 hover:text-ink"
-              }`}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "icon" }),
+                "size-9",
+                inCompare && "border-accent bg-accent-soft text-accent",
+              )}
             >
               {inCompare ? (
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>

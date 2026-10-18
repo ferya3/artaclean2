@@ -8,6 +8,8 @@ import { brands, getBrand } from "@/lib/data/brands";
 import { spareParts } from "@/lib/data/parts";
 import { productsByBrand } from "@/lib/data/products";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -43,10 +45,10 @@ export default async function BrandPage({ params }: Params) {
         lead={brand.blurb}
       >
         <div className="flex flex-wrap gap-3">
-          <Link href="/quote" className="btn-accent">
+          <Link href="/quote" className={buttonVariants({ variant: "accent" })}>
             استعلام قیمت محصولات {brand.name}
           </Link>
-          <Link href="/spare-parts" className="btn-ghost">
+          <Link href="/spare-parts" className={buttonVariants({ variant: "outline" })}>
             قطعات یدکی
           </Link>
         </div>
@@ -84,7 +86,7 @@ export default async function BrandPage({ params }: Params) {
                 </li>
               ))}
             </ul>
-            <Link href="/spare-parts" className="btn-ghost mt-6">
+            <Link href="/spare-parts" className={cn(buttonVariants({ variant: "outline" }), "mt-6")}>
               جستجوی کامل قطعات
             </Link>
           </>

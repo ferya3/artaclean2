@@ -9,6 +9,9 @@ import { projects } from "@/lib/data/knowledge";
 import { productsByIndustry } from "@/lib/data/products";
 import { categories } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { chipVariants } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -42,10 +45,10 @@ export default async function SolutionPage({ params }: Params) {
     <>
       <PageHeader eyebrow={industry.latin} title={`راهکار نظافت ${industry.name}`} lead={industry.blurb}>
         <div className="flex flex-wrap gap-3">
-          <Link href="/advisor" className="btn-accent">
+          <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
             پیشنهاد دستگاه برای سایت من
           </Link>
-          <Link href="/quote" className="btn-ghost">
+          <Link href="/quote" className={buttonVariants({ variant: "outline" })}>
             درخواست بازدید و مشاوره
           </Link>
         </div>
@@ -86,7 +89,7 @@ export default async function SolutionPage({ params }: Params) {
               <p className="mt-2 text-sm leading-7 text-muted">{problem.body}</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {problem.dirt.map((d) => (
-                  <Link key={d} href={`/advisor?dirt=${d}`} className="chip hover:border-ink/30">
+                  <Link key={d} href={`/advisor?dirt=${d}`} className={cn(chipVariants({ interactive: true }), "hover:border-ink/30")}>
                     دیدن دستگاه‌های مناسب این آلودگی
                   </Link>
                 ))}
@@ -151,7 +154,7 @@ export default async function SolutionPage({ params }: Params) {
               زمان نظافت ارائه می‌دهد.
             </p>
           </div>
-          <Link href="/quote" className="btn bg-white px-6 py-3 text-ink hover:bg-white/90">
+          <Link href="/quote" className={cn(buttonVariants(), "bg-white px-6 py-3 text-ink hover:bg-white/90")}>
             درخواست بازدید
           </Link>
         </div>

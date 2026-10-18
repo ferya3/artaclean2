@@ -24,6 +24,8 @@ import {
 } from "@/lib/filters";
 import { fa } from "@/lib/format";
 import type { Category, FilterKey, Product } from "@/lib/types";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type SortKey = "relevance" | "coverage" | "width" | "area";
 
@@ -133,7 +135,7 @@ export default function CategoryBrowser({
       })}
 
       {active > 0 && (
-        <button type="button" onClick={() => push({})} className="btn-ghost w-full text-sm">
+        <button type="button" onClick={() => push({})} className={cn(buttonVariants({ variant: "outline" }), "w-full text-sm")}>
           حذف همه فیلترها ({fa(active)})
         </button>
       )}
@@ -154,7 +156,7 @@ export default function CategoryBrowser({
           </p>
 
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setPanelOpen(true)} className="btn-ghost text-sm lg:hidden">
+            <button type="button" onClick={() => setPanelOpen(true)} className={cn(buttonVariants({ variant: "outline" }), "text-sm lg:hidden")}>
               فیلتر {active > 0 && <span className="num">({fa(active)})</span>}
             </button>
             <label className="flex items-center gap-2 text-sm text-muted">
@@ -179,7 +181,7 @@ export default function CategoryBrowser({
             title="با این فیلترها دستگاهی نیست"
             body="یک یا دو فیلتر را بردارید، یا بگذارید بر اساس شرایط سایت‌تان پیشنهاد بدهیم."
             action={
-              <button type="button" onClick={() => push({})} className="btn-primary">
+              <button type="button" onClick={() => push({})} className={buttonVariants({ variant: "primary" })}>
                 حذف فیلترها
               </button>
             }
@@ -199,13 +201,13 @@ export default function CategoryBrowser({
           <div className="absolute inset-y-0 end-0 flex w-[86%] max-w-sm flex-col bg-surface">
             <div className="flex h-14 items-center justify-between border-b border-line px-4">
               <span className="font-semibold">فیلترها</span>
-              <button type="button" onClick={() => setPanelOpen(false)} className="btn-quiet px-2">
+              <button type="button" onClick={() => setPanelOpen(false)} className={cn(buttonVariants({ variant: "quiet" }), "px-2")}>
                 بستن
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-4">{panel}</div>
             <div className="border-t border-line p-4">
-              <button type="button" onClick={() => setPanelOpen(false)} className="btn-primary w-full">
+              <button type="button" onClick={() => setPanelOpen(false)} className={cn(buttonVariants({ variant: "primary" }), "w-full")}>
                 نمایش {fa(filtered.length)} دستگاه
               </button>
             </div>

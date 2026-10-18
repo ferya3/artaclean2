@@ -9,12 +9,14 @@ import KpiStrip from "@/components/product/KpiStrip";
 import ProductCard from "@/components/product/ProductCard";
 import SpecSheet from "@/components/product/SpecSheet";
 import { Breadcrumbs } from "@/components/ui/Primitives";
-import Reveal from "@/components/ui/Reveal";
+import Reveal from "@/components/motion/Reveal";
 import { getBrand } from "@/lib/data/brands";
 import { spareParts } from "@/lib/data/parts";
 import { getProduct, products } from "@/lib/data/products";
 import { getCategory } from "@/lib/data/taxonomy";
 import { fa, specValue, toman } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ category: string; slug: string }> };
 
@@ -149,10 +151,10 @@ export default async function ProductPage({ params }: Params) {
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href={`/quote?product=${product.slug}`} className="btn-accent px-6 py-3.5">
+                <Link href={`/quote?product=${product.slug}`} className={cn(buttonVariants({ variant: "accent" }), "px-6 py-3.5")}>
                   {product.priceMode === "listed" ? "ثبت سفارش" : "درخواست پیش‌فاکتور"}
                 </Link>
-                <Link href="/quote" className="btn-glass px-6 py-3.5">
+                <Link href="/quote" className={cn(buttonVariants({ variant: "glass" }), "px-6 py-3.5")}>
                   مشاوره تخصصی
                 </Link>
                 <CompareToggle slug={product.slug} tone="deep" className="px-6 py-3.5" />
@@ -249,10 +251,10 @@ export default async function ProductPage({ params }: Params) {
                   متراژ و نوع آلودگی را بگویید تا بین این مدل و مدل‌های نزدیک، گزینه درست را با
                   برآورد زمان نظافت پیشنهاد کنیم.
                 </p>
-                <Link href="/advisor" className="btn-accent mt-6 w-full">
+                <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "mt-6 w-full")}>
                   مقایسه با شرایط سایت من
                 </Link>
-                <Link href="/compare" className="btn-glass mt-2 w-full">
+                <Link href="/compare" className={cn(buttonVariants({ variant: "glass" }), "mt-2 w-full")}>
                   جدول مقایسه دستگاه‌ها
                 </Link>
               </div>
@@ -322,7 +324,7 @@ export default async function ProductPage({ params }: Params) {
             ) : (
               <p className="text-sm text-muted">قطعات این مدل با استعلام تأمین می‌شود.</p>
             )}
-            <Link href="/spare-parts" className="btn-ghost btn-sm mt-6">
+            <Link href="/spare-parts" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-6")}>
               جستجوی کامل قطعات ←
             </Link>
           </div>

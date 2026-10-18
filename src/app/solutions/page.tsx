@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { industries } from "@/lib/data/industries";
 import { fa } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "راهکارهای نظافت صنعتی بر اساس صنعت",
@@ -19,7 +21,7 @@ export default function SolutionsPage() {
         title="راهکار نظافت بر اساس صنعت"
         lead="کاربر صنعتی معمولاً با نام دستگاه شروع نمی‌کند؛ با مسئله شروع می‌کند. اینجا از مسئله به راهکار و بعد به دستگاه می‌رسیم."
       >
-        <Link href="/advisor" className="btn-accent">
+        <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
           پیدا کردن دستگاه مناسب
         </Link>
       </PageHeader>

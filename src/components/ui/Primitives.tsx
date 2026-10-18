@@ -115,28 +115,6 @@ export function PageHeader({
   );
 }
 
-export function Badge({
-  children,
-  tone = "neutral",
-}: {
-  children: React.ReactNode;
-  tone?: "neutral" | "accent" | "outline";
-}) {
-  const cls =
-    tone === "accent"
-      ? "bg-accent text-white shadow-[0_6px_16px_-8px_rgb(255_106_26/0.9)]"
-      : tone === "outline"
-        ? "border border-line text-muted"
-        : "bg-ink/[0.06] text-ink/70";
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${cls}`}
-    >
-      {children}
-    </span>
-  );
-}
-
 export function EmptyState({
   title,
   body,

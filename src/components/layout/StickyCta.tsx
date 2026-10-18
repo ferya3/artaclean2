@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 /**
  * نوار CTA چسبان موبایل.
@@ -27,10 +29,10 @@ export default function StickyCta() {
             />
           </svg>
         </a>
-        <Link href="/advisor" className="btn-ghost btn-sm h-11 flex-1">
+        <Link href="/advisor" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-11 flex-1")}>
           مشاوره خرید
         </Link>
-        <Link href="/quote" className="btn-accent btn-sm h-11 flex-1">
+        <Link href="/quote" className={cn(buttonVariants({ variant: "accent", size: "sm" }), "h-11 flex-1")}>
           درخواست قیمت
         </Link>
       </div>
