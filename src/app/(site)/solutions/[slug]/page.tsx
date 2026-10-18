@@ -6,7 +6,7 @@ import ProductCard from "@/components/product/ProductCard";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { getIndustry, industries } from "@/lib/data/industries";
 import { projects } from "@/lib/data/knowledge";
-import { productsByIndustry } from "@/lib/data/products";
+import { catalogByIndustry } from "@/lib/catalog";
 import { categories } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export default async function SolutionPage({ params }: Params) {
   const industry = getIndustry(slug);
   if (!industry) notFound();
 
-  const recommended = productsByIndustry(industry.slug);
+  const recommended = catalogByIndustry(industry.slug);
   const cases = projects.filter((p) => p.industry === industry.slug);
   const cats = industry.recommendedCategories
     .map((c) => categories.find((cat) => cat.slug === c))

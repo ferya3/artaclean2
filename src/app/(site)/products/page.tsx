@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import ProductVisual from "@/components/ui/ProductVisual";
 import Reveal from "@/components/motion/Reveal";
-import { productsByCategory } from "@/lib/data/products";
+import { catalogByCategory } from "@/lib/catalog";
 import { categories, categoryGroups } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
@@ -47,7 +47,7 @@ export default function ProductsPage() {
               <h2 className="mb-6 border-b border-line pb-3 text-lg font-bold">{group.title}</h2>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((c) => {
-                  const count = productsByCategory(c.slug).length;
+                  const count = catalogByCategory(c.slug).length;
                   return (
                     <Link key={c.slug} href={`/products/${c.slug}`} className="card card-hover group block overflow-hidden">
                       <ProductVisual kind={c.slug} ratio="aspect-[16/9]" label={c.name} className="transition-transform duration-[900ms] ease-out group-hover:scale-[1.07]" />

@@ -44,6 +44,7 @@ export default function ProductCard({ product, compact = false }: { product: Pro
           label={product.model}
           scale={visualScale(product.facets.areaMax)}
           brush={product.facets.brushType}
+          src={product.image}
           ratio="aspect-[5/4]"
           className="transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
         />

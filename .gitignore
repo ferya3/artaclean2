@@ -16,3 +16,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# دیتابیس و فایل‌های آپلودی — داده زمان اجرا، نه کد
+/data/
+/public/uploads/

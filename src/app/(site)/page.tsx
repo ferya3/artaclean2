@@ -10,7 +10,7 @@ import { SectionHeading } from "@/components/ui/Primitives";
 import { brands } from "@/lib/data/brands";
 import { industries } from "@/lib/data/industries";
 import { articles, articleKindLabels, projects } from "@/lib/data/knowledge";
-import { products } from "@/lib/data/products";
+import { catalog } from "@/lib/catalog";
 import { services } from "@/lib/data/services";
 import { categories } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
@@ -31,7 +31,8 @@ const TRUST = [
 ];
 
 export default function HomePage() {
-  const featured = FEATURED.map((slug) => products.find((p) => p.slug === slug)).filter(
+  const all = catalog();
+  const featured = FEATURED.map((slug) => all.find((p) => p.slug === slug)).filter(
     (p): p is NonNullable<typeof p> => Boolean(p),
   );
 

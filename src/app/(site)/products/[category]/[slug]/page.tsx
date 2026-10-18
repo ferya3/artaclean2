@@ -12,6 +12,7 @@ import { Breadcrumbs } from "@/components/ui/Primitives";
 import Reveal from "@/components/motion/Reveal";
 import { getBrand } from "@/lib/data/brands";
 import { spareParts } from "@/lib/data/parts";
+import { getCatalogProduct } from "@/lib/catalog";
 import { getProduct, products } from "@/lib/data/products";
 import { getCategory } from "@/lib/data/taxonomy";
 import { fa, specValue, toman } from "@/lib/format";
@@ -46,7 +47,7 @@ const SECTIONS = [
 
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = getCatalogProduct(slug);
   if (!product) notFound();
 
   const category = getCategory(product.category);

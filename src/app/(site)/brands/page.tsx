@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { brands } from "@/lib/data/brands";
-import { productsByBrand } from "@/lib/data/products";
+import { catalogByBrand } from "@/lib/catalog";
 import { fa } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -26,7 +26,7 @@ export default function BrandsPage() {
 
       <div className="shell grid gap-5 pb-16 sm:grid-cols-2 lg:grid-cols-3">
         {brands.map((b) => {
-          const count = productsByBrand(b.slug).length;
+          const count = catalogByBrand(b.slug).length;
           return (
             <Link key={b.slug} href={`/brands/${b.slug}`} className="card card-hover group p-6">
               <div className="flex items-baseline justify-between gap-3">

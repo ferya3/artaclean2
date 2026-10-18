@@ -23,6 +23,8 @@ interface Props {
    * تا در فهرست، دستگاه بزرگ‌تر واقعاً بزرگ‌تر دیده شود.
    */
   scale?: number;
+  /** تصویر واقعی محصول. اگر باشد، جای تصویر برداری را می‌گیرد. */
+  src?: string;
   /**
    * نوع برس. شکل ابزار کف را تعیین می‌کند — دیسکی، رولی یا اوربیتال.
    * تفاوت بین مدل‌های هم‌دسته از همین می‌آید، نه از یک واریانت تصادفی:
@@ -42,9 +44,26 @@ export default function ProductVisual({
   label,
   scale = 1,
   brush = "disc",
+  src,
 }: Props) {
   const deep = tone === "deep";
   const s = Math.max(0.8, Math.min(1.15, scale));
+
+  if (src) {
+    return (
+      <div className={`relative overflow-hidden ${ratio} ${className}`}>
+        {/* تصویر آپلودی ابعاد از پیش معلومی ندارد و قبلاً به WebP بهینه شده؛
+            next/image اینجا فقط پیکربندی اضافه می‌خواهد بدون سود واقعی. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={label ? `تصویر ${label}` : "تصویر دستگاه"}
+          loading="lazy"
+          className={`h-full w-full object-cover ${deep ? "" : "bg-surface"}`}
+        />
+      </div>
+    );
+  }
 
   return (
     <div

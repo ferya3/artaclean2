@@ -122,6 +122,9 @@ export interface Product {
     frequency: FrequencyBand[];
   };
 
+  /** تصویر واقعی محصول (از پنل مدیریت). نبودش یعنی تصویر برداری نمایش داده شود. */
+  image?: string;
+
   /** RFQ برای دستگاه سنگین، قیمت مستقیم برای مصرفی و لوازم جانبی. */
   priceMode: "rfq" | "listed";
   price?: number;

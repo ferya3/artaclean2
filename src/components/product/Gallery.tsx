@@ -26,6 +26,7 @@ export default function Gallery({ product }: { product: Product }) {
           kind={product.category}
           variant={product.facets.machineType}
           brush={product.facets.brushType}
+          src={product.image}
           scale={visualScale(product.facets.areaMax)}
           tone="deep"
           ratio="aspect-[4/3]"

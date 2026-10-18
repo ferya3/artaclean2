@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import CategoryBrowser from "@/components/catalog/CategoryBrowser";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { getArticle } from "@/lib/data/knowledge";
-import { productsByCategory } from "@/lib/data/products";
+import { catalogByCategory } from "@/lib/catalog";
 import { categories, getCategory } from "@/lib/data/taxonomy";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ export default async function CategoryPage({ params }: Params) {
   const cat = getCategory(category);
   if (!cat) notFound();
 
-  const items = productsByCategory(cat.slug);
+  const items = catalogByCategory(cat.slug);
   const guide = cat.buyingGuide ? getArticle(cat.buyingGuide) : undefined;
 
   return (

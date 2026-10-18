@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+
+import { submitQuote } from "@/app/actions/quote";
 
 import { areaLabels, dirtLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { industries } from "@/lib/data/industries";
@@ -14,7 +16,8 @@ import { cn } from "@/lib/utils";
  * فرم عمداً مرحله‌ای است تا هر گام یک تصمیم بگیرد، و اطلاعات تماس آخر باشد —
  * وقتی کاربر پیش از آن، پنج مرحله زمان گذاشته، نرخ رهاکردن فرم پایین می‌آید.
  *
- * ارسال فعلاً سمت کلاینت شبیه‌سازی می‌شود؛ نقطه اتصال به CRM در handleSubmit است.
+ * ارسال با Server Action انجام می‌شود و مستقیم در SQLite ثبت می‌گردد؛
+ * بدون API route و بدون هندلر جداگانه.
  */
 
 const STEPS = ["مشخصات پروژه", "دستگاه و تعداد", "زمان و بودجه", "اطلاعات شرکت"] as const;
@@ -64,6 +67,8 @@ export default function QuoteForm({ presetProduct }: { presetProduct?: string })
   const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>({ ...EMPTY, interest: presetProduct ?? "" });
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
   const set = <K extends keyof FormData>(key: K, value: FormData[K]) =>
     setData((prev) => ({ ...prev, [key]: value }));
@@ -77,8 +82,22 @@ export default function QuoteForm({ presetProduct }: { presetProduct?: string })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // نقطه اتصال: POST به CRM / صف پیش‌فاکتور.
-    setSent(true);
+    setError(null);
+
+    const payload = new FormData();
+    for (const [key, value] of Object.entries(data)) {
+      if (typeof value === "boolean") {
+        if (value) payload.set(key, "on");
+      } else if (value) {
+        payload.set(key, value);
+      }
+    }
+
+    startTransition(async () => {
+      const result = await submitQuote(payload);
+      if (result.ok) setSent(true);
+      else setError(result.error ?? "ثبت درخواست ممکن نشد.");
+    });
   };
 
   if (sent) {
@@ -114,7 +133,9 @@ export default function QuoteForm({ presetProduct }: { presetProduct?: string })
               i === step ? "bg-canvas font-semibold text-ink" : "text-muted"
             }`}
           >
-            <span className="num me-1">{fa(i + 1)}.</span>
+            <span className="me-1">
+              <span className="num">{fa(i + 1)}</span>.
+            </span>
             <span className="hidden sm:inline">{label}</span>
           </li>
         ))}
