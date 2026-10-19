@@ -15,6 +15,7 @@ import {
   getProducts,
   getProjects,
   getServices,
+  toCardData,
 } from "@/lib/content";
 import { articleKindLabels } from "@/lib/data/knowledge";
 import { homeSettings } from "@/lib/site";
@@ -37,7 +38,8 @@ export default function HomePage() {
 
   const featured = home.featured
     .map((slug) => all.find((p) => p.slug === slug))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p));
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .map(toCardData);
 
   return (
     <>

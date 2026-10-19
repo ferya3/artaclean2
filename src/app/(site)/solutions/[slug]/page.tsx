@@ -10,6 +10,7 @@ import {
   getIndustry,
   getProjects,
   productsByIndustry,
+  toCardData,
 } from "@/lib/content";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
@@ -38,7 +39,7 @@ export default async function SolutionPage({ params }: Params) {
   const industry = getIndustry(slug);
   if (!industry) notFound();
 
-  const recommended = productsByIndustry(industry.slug);
+  const recommended = productsByIndustry(industry.slug).map(toCardData);
   const cases = getProjects().filter((p) => p.industry === industry.slug);
   const categories = getCategories();
   const cats = industry.recommendedCategories

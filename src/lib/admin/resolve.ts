@@ -9,7 +9,7 @@ import {
   type OptionSource,
   type Section,
 } from "@/lib/admin/fields";
-import { listRows } from "@/lib/db/content";
+import { listSummaries } from "@/lib/db/content";
 import {
   areaLabels,
   brushTypeLabels,
@@ -95,15 +95,10 @@ const labelField: Record<ContentCollection, string[]> = {
 };
 
 function collectionOptions(collection: ContentCollection): Option[] {
-  return listRows(collection, true).map((row) => {
-    const data = (row.data ?? {}) as Record<string, unknown>;
-    const parts = (labelField[collection] ?? [])
-      .map((key) => data[key])
-      .filter((v): v is string => typeof v === "string" && v.length > 0);
-    return {
-      value: row.slug,
-      label: parts.length ? parts.join(" — ") : row.slug,
-    };
+  const fields = labelField[collection] ?? [];
+  return listSummaries(collection, fields).map((row) => {
+    const parts = row.values.filter((v): v is string => Boolean(v));
+    return { value: row.slug, label: parts.length ? parts.join(" — ") : row.slug };
   });
 }
 

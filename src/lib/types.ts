@@ -135,6 +135,36 @@ export interface Product {
   related: Id[];
 }
 
+/**
+ * محصول در حدی که کارت، فیلتر و مشاور لازم دارند.
+ *
+ * بدنه کامل یک محصول صنعتی چند کیلوبایت است و بیشترش `specGroups` است —
+ * چیزی که فقط صفحه محصول و جدول مقایسه می‌خوانند. فرستادن کل بدنه به
+ * کامپوننت کلاینت، صفحه مشاور را با ۴۰۰ دستگاه به چند مگابایت می‌رساند.
+ *
+ * این تایپ آن مرز را **اجباری** می‌کند: کامپوننت‌های فهرستی همین را
+ * می‌گیرند، نه `Product` کامل. `Product` به این تایپ قابل انتساب است، پس
+ * کد سمت سرور بدون تغییر کار می‌کند.
+ */
+export type ProductCardData = Pick<
+  Product,
+  | "slug"
+  | "name"
+  | "model"
+  | "brand"
+  | "category"
+  | "subcategory"
+  | "tagline"
+  | "badges"
+  | "kpis"
+  | "facets"
+  | "fit"
+  | "applications"
+  | "image"
+  | "priceMode"
+  | "price"
+>;
+
 export interface Category {
   slug: Id;
   name: string;

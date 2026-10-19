@@ -17,6 +17,7 @@ import {
   getParts,
   getProduct,
   getProducts,
+  toCardData,
 } from "@/lib/content";
 import { fa, specValue, toman } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
@@ -57,7 +58,8 @@ export default async function ProductPage({ params }: Params) {
   const brand = getBrand(product.brand);
   const related = product.related
     .map((s) => getProduct(s))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p));
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .map(toCardData);
   const parts = getParts().filter((part) => part.fitsModels.includes(product.slug));
   const industries = getIndustries().map((i) => ({
     slug: i.slug,

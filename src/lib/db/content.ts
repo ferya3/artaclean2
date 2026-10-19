@@ -53,6 +53,55 @@ export function listRows(collection: string, includeDrafts = false): ContentRow[
   return (db().prepare(sql).all(collection) as unknown as RawRow[]).map(parse);
 }
 
+export interface ContentSummary {
+  slug: string;
+  published: boolean;
+  /** فقط فیلدهای درخواست‌شده، به همان ترتیب. */
+  values: (string | null)[];
+}
+
+/**
+ * فهرست سبک یک مجموعه — بدون باز کردن بدنه رکوردها.
+ *
+ * فهرست پنل و گزینه‌های کشویی فقط به نام و یکی دو فیلد دیگر نیاز دارند،
+ * ولی بدنه یک محصول صنعتی چند کیلوبایت JSON است. خواندن و parse کردن کل
+ * کاتالوگ برای ساختن یک `<select>` در ۱۸ محصول نامحسوس است و در ۴۰۰
+ * محصول یعنی چند مگابایت parse در هر رندر صفحه.
+ *
+ * `json_extract` همین کار را داخل SQLite انجام می‌دهد و فقط همان چند رشته
+ * برمی‌گردد.
+ */
+export function listSummaries(
+  collection: string,
+  fields: string[],
+  includeDrafts = true,
+): ContentSummary[] {
+  // نام فیلدها از schemaهای خودِ کد می‌آید، نه از ورودی کاربر؛ با این حال
+  // چون داخل رشته SQL می‌نشینند، به حروف و رقم محدود می‌شوند.
+  const safe = fields.filter((f) => /^[A-Za-z0-9_]+$/.test(f));
+  const columns = safe.map((f, i) => `json_extract(data, '$.${f}') AS f${i}`).join(", ");
+  const where = includeDrafts ? "" : " AND published = 1";
+
+  const rows = db()
+    .prepare(
+      `SELECT slug, published${columns ? ", " + columns : ""}
+         FROM content WHERE collection = ?${where} ORDER BY position, slug`,
+    )
+    .all(collection) as unknown as Record<string, unknown>[];
+
+  return rows.map((row) => ({
+    slug: String(row.slug),
+    published: row.published === 1,
+    values: safe.map((_, i) => {
+      const value = row[`f${i}`];
+      // json_extract برای عدد، عدد برمی‌گرداند؛ برای شیء/آرایه، متن JSON.
+      if (typeof value === "string") return value;
+      if (typeof value === "number") return String(value);
+      return null;
+    }),
+  }));
+}
+
 export function getRow(collection: string, slug: string): ContentRow | undefined {
   const row = db()
     .prepare("SELECT * FROM content WHERE collection = ? AND slug = ?")
@@ -134,13 +183,36 @@ export function nextPosition(collection: string): number {
   return Number(row?.next ?? 0);
 }
 
-export function countRows(collection: string): { total: number; published: number } {
-  const row = db()
+export interface CollectionCount {
+  total: number;
+  published: number;
+}
+
+/**
+ * شمارش همه مجموعه‌ها با یک پرس‌وجو.
+ *
+ * منوی کناری پنل تعداد هر مجموعه را نشان می‌دهد و با هر ناوبری دوباره
+ * رندر می‌شود. ده پرس‌وجوی جداگانه در هر رندر، ده بار باز کردن و بستن
+ * statement است برای چیزی که یک GROUP BY جواب می‌دهد.
+ */
+export function collectionCounts(): Record<string, CollectionCount> {
+  const rows = db()
     .prepare(
-      "SELECT COUNT(*) AS total, SUM(published) AS published FROM content WHERE collection = ?",
+      `SELECT collection, COUNT(*) AS total, SUM(published) AS published
+         FROM content GROUP BY collection`,
     )
-    .get(collection) as { total?: number; published?: number };
-  return { total: Number(row?.total ?? 0), published: Number(row?.published ?? 0) };
+    .all() as unknown as { collection: string; total: number; published: number }[];
+
+  return Object.fromEntries(
+    rows.map((r) => [
+      r.collection,
+      { total: Number(r.total ?? 0), published: Number(r.published ?? 0) },
+    ]),
+  );
+}
+
+export function countRows(collection: string): CollectionCount {
+  return collectionCounts()[collection] ?? { total: 0, published: 0 };
 }
 
 /* ────────────────────────────────────────────────────────── تنظیمات */

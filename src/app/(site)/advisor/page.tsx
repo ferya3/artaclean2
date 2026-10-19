@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import Advisor from "@/components/advisor/Advisor";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import type { AdvisorAnswers } from "@/lib/advisor";
-import { consumableCategorySlugs, getPage, getProducts } from "@/lib/content";
+import { advise } from "@/lib/actions/advisor";
+import { getPage } from "@/lib/content";
 import { areaLabels, dirtLabels, frequencyLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import type { AreaBand, DirtKind, FrequencyBand, SurfaceKind } from "@/lib/types";
 
@@ -36,10 +37,9 @@ export default async function AdvisorPage({ searchParams }: Search) {
 
   const page = getPage("advisor");
 
-  // مصرفی‌ها از رتبه‌بندی اصلی جدا می‌شوند؛ تقسیم اینجا انجام می‌شود چون
-  // «مصرفی بودن» از گروهِ دسته می‌آید و دسته‌ها محتوای قابل ویرایش‌اند.
-  const consumables = new Set(consumableCategorySlugs());
-  const all = getProducts();
+  // نخستین نتیجه همین‌جا حساب می‌شود تا لینکِ از پیش پاسخ‌دار (از جست‌وجو
+  // یا اشتراک‌گذاری) بدون انتظار، فهرست را نشان دهد.
+  const initialAdvice = await advise(initial);
 
   return (
     <>
@@ -50,11 +50,7 @@ export default async function AdvisorPage({ searchParams }: Search) {
       </div>
 
       <div className="shell pb-16">
-        <Advisor
-          initial={initial}
-          machines={all.filter((p) => !consumables.has(p.category))}
-          consumables={all.filter((p) => consumables.has(p.category))}
-        />
+        <Advisor initial={initial} initialAdvice={initialAdvice} />
       </div>
     </>
   );

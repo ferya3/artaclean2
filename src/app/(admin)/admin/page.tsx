@@ -1,10 +1,9 @@
 import { ArrowLeft, Inbox, Package, Plus, Settings, TrendingUp } from "lucide-react";
-import Link from "next/link";
-
+import AdminLink from "@/components/admin/AdminLink";
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { collectionOrder, schemas } from "@/lib/admin/schemas";
-import { countRows } from "@/lib/db/content";
+import { collectionCounts } from "@/lib/db/content";
 import { listQuotes, quoteCounts } from "@/lib/db/queries";
 import { fa } from "@/lib/format";
 
@@ -12,7 +11,8 @@ export default function AdminDashboard() {
   const counts = quoteCounts();
   const recent = listQuotes().slice(0, 6);
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  const products = countRows("products");
+  const contentCounts = collectionCounts();
+  const products = contentCounts.products ?? { total: 0, published: 0 };
 
   const stats = [
     { label: "درخواست جدید", value: counts.new ?? 0, icon: Inbox, href: "/admin/quotes?status=new" },
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
         {stats.map((s) => {
           const Icon = s.icon;
           return (
-            <Link key={s.label} href={s.href}>
+            <AdminLink key={s.label} href={s.href}>
               <Card hover className="flex items-center gap-4 p-6">
                 <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent">
                   <Icon className="size-5" aria-hidden />
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
                   <span className="block text-xs text-muted">{s.label}</span>
                 </span>
               </Card>
-            </Link>
+            </AdminLink>
           );
         })}
       </div>
@@ -54,10 +54,10 @@ export default function AdminDashboard() {
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {collectionOrder.map((key) => {
           const schema = schemas[key];
-          const stat = countRows(key);
+          const stat = contentCounts[key] ?? { total: 0, published: 0 };
           return (
             <Card key={key} hover className="flex items-center gap-4 p-5">
-              <Link href={`/admin/c/${key}`} className="min-w-0 flex-1">
+              <AdminLink href={`/admin/c/${key}`} className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{schema.title}</span>
                 <span className="num mt-0.5 block text-xs text-muted">
                   {fa(stat.total)} مورد
@@ -65,40 +65,40 @@ export default function AdminDashboard() {
                     ? ` · ${fa(stat.total - stat.published)} پیش‌نویس`
                     : ""}
                 </span>
-              </Link>
-              <Link
+              </AdminLink>
+              <AdminLink
                 href={`/admin/c/${key}/new`}
                 className="shrink-0 rounded-lg border border-line p-2 text-muted transition-colors hover:border-ink/30 hover:text-ink"
                 aria-label={`افزودن ${schema.singular}`}
               >
                 <Plus className="size-4" aria-hidden />
-              </Link>
+              </AdminLink>
             </Card>
           );
         })}
       </div>
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link href="/admin/settings/home" className={buttonVariants({ variant: "outline", size: "sm" })}>
+        <AdminLink href="/admin/settings/home" className={buttonVariants({ variant: "outline", size: "sm" })}>
           <Settings className="size-4" aria-hidden />
           متن‌های صفحه اصلی
-        </Link>
-        <Link href="/admin/settings/site" className={buttonVariants({ variant: "outline", size: "sm" })}>
+        </AdminLink>
+        <AdminLink href="/admin/settings/site" className={buttonVariants({ variant: "outline", size: "sm" })}>
           <Settings className="size-4" aria-hidden />
           تماس و هویت برند
-        </Link>
-        <Link href="/admin/settings/nav" className={buttonVariants({ variant: "outline", size: "sm" })}>
+        </AdminLink>
+        <AdminLink href="/admin/settings/nav" className={buttonVariants({ variant: "outline", size: "sm" })}>
           <Settings className="size-4" aria-hidden />
           منوها
-        </Link>
+        </AdminLink>
       </div>
 
       <div className="mt-10 flex items-center justify-between">
         <h2 className="text-lg font-bold">آخرین درخواست‌ها</h2>
-        <Link href="/admin/quotes" className="flex items-center gap-1 text-sm text-accent">
+        <AdminLink href="/admin/quotes" className="flex items-center gap-1 text-sm text-accent">
           همه درخواست‌ها
           <ArrowLeft className="size-4" aria-hidden />
-        </Link>
+        </AdminLink>
       </div>
 
       {recent.length === 0 ? (

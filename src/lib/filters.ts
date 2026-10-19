@@ -1,5 +1,5 @@
 import { areaBandRange, workingWidthBands } from "@/lib/data/taxonomy";
-import type { AreaBand, FilterKey, Product } from "@/lib/types";
+import type { AreaBand, FilterKey, ProductCardData } from "@/lib/types";
 
 /** وضعیت فیلتر، مستقیماً از query string خوانده می‌شود تا لینک قابل اشتراک باشد. */
 export type FilterState = Partial<Record<FilterKey, string[]>>;
@@ -57,7 +57,7 @@ const widthRanges = Object.fromEntries(workingWidthBands.map((b) => [b.key, b.ra
   [number, number]
 >;
 
-export function applyFilters(items: Product[], state: FilterState): Product[] {
+export function applyFilters<T extends ProductCardData>(items: T[], state: FilterState): T[] {
   return items.filter((p) => {
     if (state.machineType && !state.machineType.includes(p.facets.machineType)) return false;
     if (state.powerSource && !state.powerSource.includes(p.facets.powerSource)) return false;
@@ -84,7 +84,12 @@ export function applyFilters(items: Product[], state: FilterState): Product[] {
 }
 
 /** تعداد نتایج هر گزینه، اگر آن گزینه به فیلتر فعلی اضافه شود. */
-export function facetCount(items: Product[], state: FilterState, key: FilterKey, value: string): number {
+export function facetCount(
+  items: ProductCardData[],
+  state: FilterState,
+  key: FilterKey,
+  value: string,
+): number {
   const probe = toggleFilter({ ...state, [key]: [] }, key, value);
   return applyFilters(items, { ...state, [key]: probe[key] }).length;
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import AdminLink from "@/components/admin/AdminLink";
 
 import { updateQuoteStatusAction } from "@/app/(admin)/admin/actions";
 import { Card } from "@/components/ui/card";
@@ -36,7 +36,7 @@ export default async function AdminQuotesPage({ searchParams }: Search) {
         {STATUSES.map((s) => {
           const count = s.key === "all" ? Object.values(counts).reduce((a, b) => a + b, 0) : (counts[s.key] ?? 0);
           return (
-            <Link
+            <AdminLink
               key={s.key}
               href={`/admin/quotes?status=${s.key}`}
               className={cn(
@@ -50,7 +50,7 @@ export default async function AdminQuotesPage({ searchParams }: Search) {
               <span className="ms-2 text-xs opacity-60">
                 <span className="num">{fa(count)}</span>
               </span>
-            </Link>
+            </AdminLink>
           );
         })}
       </div>

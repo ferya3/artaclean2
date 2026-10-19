@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import ProductCard from "@/components/product/ProductCard";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { getBrand, getBrands, getParts, productsByBrand } from "@/lib/content";
+import { getBrand, getBrands, getParts, productsByBrand, toCardData } from "@/lib/content";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,7 @@ export default async function BrandPage({ params }: Params) {
   const brand = getBrand(slug);
   if (!brand) notFound();
 
-  const items = productsByBrand(brand.slug);
+  const items = productsByBrand(brand.slug).map(toCardData);
   const models = new Set(items.map((i) => i.slug));
   const parts = getParts().filter((p) => p.fitsModels.some((m) => models.has(m)));
 

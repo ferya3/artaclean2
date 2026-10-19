@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import AdminLink from "@/components/admin/AdminLink";
 import { notFound } from "next/navigation";
 
 import RecordEditor from "@/components/admin/RecordEditor";
@@ -17,13 +17,13 @@ export default async function NewRecordPage({ params }: Params) {
 
   return (
     <>
-      <Link
+      <AdminLink
         href={`/admin/c/${collection}`}
         className="mb-5 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-ink"
       >
         <ArrowRight className="size-4" aria-hidden />
         {schema.title}
-      </Link>
+      </AdminLink>
 
       <h1 className="mb-8 text-2xl font-black">افزودن {schema.singular}</h1>
 

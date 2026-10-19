@@ -5,7 +5,14 @@ import { Suspense } from "react";
 
 import CategoryBrowser from "@/components/catalog/CategoryBrowser";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { getArticle, getBrands, getCategories, getCategory, productsByCategory } from "@/lib/content";
+import {
+  getArticle,
+  getBrands,
+  getCategories,
+  getCategory,
+  productsByCategory,
+  toCardData,
+} from "@/lib/content";
 import { buttonVariants } from "@/components/ui/button";
 
 type Params = { params: Promise<{ category: string }> };
@@ -30,7 +37,7 @@ export default async function CategoryPage({ params }: Params) {
   const cat = getCategory(category);
   if (!cat) notFound();
 
-  const items = productsByCategory(cat.slug);
+  const items = productsByCategory(cat.slug).map(toCardData);
   const guide = cat.buyingGuide ? getArticle(cat.buyingGuide) : undefined;
   const brands = getBrands().map((b) => ({ slug: b.slug, name: b.name }));
 

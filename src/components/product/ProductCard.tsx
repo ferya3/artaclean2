@@ -9,7 +9,7 @@ import ProductVisual from "@/components/ui/ProductVisual";
 import { useIndustryNames, useSpecRatio } from "@/components/providers/SiteData";
 import { specValue, toman } from "@/lib/format";
 import { visualScale } from "@/lib/scale";
-import type { Product } from "@/lib/types";
+import type { ProductCardData } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,13 @@ import { cn } from "@/lib/utils";
  * تصمیم می‌گیرد — پس همان‌ها روی کارت می‌آیند، هرکدام با نوار نسبت تا عدد در
  * مقیاس کاتالوگ معنا پیدا کند.
  */
-export default function ProductCard({ product, compact = false }: { product: Product; compact?: boolean }) {
+export default function ProductCard({
+  product,
+  compact = false,
+}: {
+  product: ProductCardData;
+  compact?: boolean;
+}) {
   const { has, toggle, full } = useCompare();
   const ratioOf = useSpecRatio();
   const names = useIndustryNames();

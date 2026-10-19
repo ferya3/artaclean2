@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import ProductCard from "@/components/product/ProductCard";
-import { recommend, recommendComplements, type AdvisorAnswers } from "@/lib/advisor";
+import { adviseAction, type AdviceResponse } from "@/lib/actions/advisor";
+import type { AdvisorAnswers } from "@/lib/advisor";
 import { areaLabels, dirtLabels, frequencyLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
-import type { Product } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -41,31 +41,50 @@ const STEPS: { key: StepKey; question: string; hint: string; options: Record<str
 ];
 
 /**
- * کاتالوگ به‌صورت prop می‌آید (از صفحه سرور) و دو تکه است: دستگاه‌ها و
- * مصرفی‌ها. جداسازی بالادست انجام می‌شود چون «مصرفی بودن» از گروه دسته
- * می‌آید و دسته‌ها هم محتوای قابل ویرایش‌اند.
+ * امتیازدهی سمت سرور انجام می‌شود و فقط همان چند نتیجه برمی‌گردد —
+ * کاتالوگ به کلاینت نمی‌آید. نتیجه نخستین رندر از صفحه سرور می‌رسد تا
+ * لینکِ از پیش پاسخ‌دار (مثلاً از جست‌وجو) بی‌درنگ نتیجه نشان دهد.
  */
 export default function Advisor({
   initial = {},
-  machines,
-  consumables,
+  initialAdvice,
 }: {
   initial?: AdvisorAnswers;
-  machines: Product[];
-  consumables: Product[];
+  initialAdvice: AdviceResponse;
 }) {
   const [answers, setAnswers] = useState<AdvisorAnswers>(initial);
+  const [advice, setAdvice] = useState<AdviceResponse>(initialAdvice);
+  const [pending, startTransition] = useTransition();
 
   // اولین پرسش بی‌پاسخ، مرحله جاری است — کاربر می‌تواند هر مرحله را هم عوض کند.
   const currentStep = STEPS.findIndex((s) => !answers[s.key]);
   const complete = currentStep === -1;
   const answeredCount = STEPS.filter((s) => answers[s.key]).length;
 
-  const results = useMemo(() => recommend(answers, machines), [answers, machines]);
-  const complements = useMemo(
-    () => recommendComplements(answers, consumables),
-    [answers, consumables],
-  );
+  // نخستین اجرا نتیجه‌اش را از سرور گرفته؛ دوباره نپرس.
+  const [primed, setPrimed] = useState(true);
+
+  useEffect(() => {
+    if (primed) {
+      setPrimed(false);
+      return;
+    }
+    let active = true;
+    startTransition(async () => {
+      try {
+        const next = await adviseAction(answers);
+        if (active) setAdvice(next);
+      } catch {
+        // شکست شبکه نباید فهرست قبلی را پاک کند.
+      }
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers]);
+
+  const { results, complements } = advice;
 
   const set = (key: StepKey, value: string) =>
     setAnswers(
@@ -179,7 +198,9 @@ export default function Advisor({
                 {complete ? "دستگاه‌های پیشنهادی" : "پیشنهادهای اولیه"}
                 <span className="ms-2 text-sm font-normal text-muted">({fa(results.length)} مورد)</span>
               </h2>
-              {!complete && <p className="text-xs text-muted">با پاسخ به پرسش‌های بعدی دقیق‌تر می‌شود</p>}
+              <p className="text-xs text-muted">
+                {pending ? "در حال محاسبه…" : !complete ? "با پاسخ به پرسش‌های بعدی دقیق‌تر می‌شود" : ""}
+              </p>
             </div>
 
             <div className="space-y-4">

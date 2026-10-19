@@ -21,6 +21,7 @@ import type {
   PageContent,
   PowerSource,
   Product,
+  ProductCardData,
   Project,
   Service,
   SparePart,
@@ -431,6 +432,33 @@ export const consumableCategorySlugs = cache((): string[] =>
     .filter((c) => c.group === "consumable")
     .map((c) => c.slug),
 );
+
+/**
+ * کوچک کردن محصول تا اندازه‌ای که کارت و فیلتر لازم دارند.
+ *
+ * صفحه دسته‌بندی و مشاور فهرست محصول را به کامپوننت کلاینت می‌دهند؛ بدون
+ * این، کل `specGroups` هر محصول هم با آن می‌رود و صفحه مشاور با کاتالوگ
+ * واقعی چند مگابایتی می‌شود.
+ */
+export function toCardData(p: Product): ProductCardData {
+  return {
+    slug: p.slug,
+    name: p.name,
+    model: p.model,
+    brand: p.brand,
+    category: p.category,
+    subcategory: p.subcategory,
+    tagline: p.tagline,
+    badges: p.badges,
+    kpis: p.kpis,
+    facets: p.facets,
+    fit: p.fit,
+    applications: p.applications,
+    image: p.image,
+    priceMode: p.priceMode,
+    price: p.price,
+  };
+}
 
 /** همه‌چیزی که موتور جست‌وجو برای ساخت نتیجه لازم دارد. */
 export const searchCorpus = cache(() => ({

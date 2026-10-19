@@ -14,14 +14,15 @@ import {
   Wrench,
 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+
+import AdminLink from "@/components/admin/AdminLink";
 
 import { logoutAction } from "@/app/(admin)/admin/actions";
 import { buttonVariants } from "@/components/ui/button";
 import { currentUser } from "@/lib/auth";
 import { collectionOrder, schemas } from "@/lib/admin/schemas";
-import { countRows } from "@/lib/db/content";
+import { collectionCounts } from "@/lib/db/content";
 import { quoteCounts } from "@/lib/db/queries";
 import { fa } from "@/lib/format";
 import { siteSettings } from "@/lib/site";
@@ -57,32 +58,30 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const site = siteSettings();
   const newQuotes = quoteCounts().new ?? 0;
+  const counts = collectionCounts();
 
-  const contentLinks = collectionOrder.map((key) => {
-    const schema = schemas[key];
-    return {
-      href: `/admin/c/${key}`,
-      label: schema.title,
-      icon: COLLECTION_ICONS[key] ?? Package,
-      count: countRows(key).total,
-    };
-  });
+  const contentLinks = collectionOrder.map((key) => ({
+    href: `/admin/c/${key}`,
+    label: schemas[key].title,
+    icon: COLLECTION_ICONS[key] ?? Package,
+    count: counts[key]?.total ?? 0,
+  }));
 
   return (
     <div className="min-h-screen bg-canvas">
       <header className="section-deep sticky top-0 z-30">
         <div className="shell flex h-16 items-center gap-6">
-          <Link href="/admin" className="flex items-center gap-2.5">
+          <AdminLink href="/admin" className="flex items-center gap-2.5">
             <span className="grid size-9 place-items-center rounded-xl bg-linear-to-br from-accent to-accent-2 text-xs font-black text-white">
               {site.brandShort}
             </span>
             <span className="font-extrabold text-white">پنل مدیریت</span>
-          </Link>
+          </AdminLink>
 
           <div className="ms-auto flex items-center gap-3">
-            <Link href="/" target="_blank" className="text-xs text-white/50 transition-colors hover:text-white">
+            <AdminLink href="/" target="_blank" className="text-xs text-white/50 transition-colors hover:text-white">
               مشاهده سایت ←
-            </Link>
+            </AdminLink>
             <span className="hidden text-xs text-white/40 md:inline">{user.name}</span>
             <form action={logoutAction}>
               <button type="submit" className={cn(buttonVariants({ variant: "glass", size: "sm" }))}>
@@ -153,7 +152,7 @@ function NavGroup({
           const Icon = item.icon;
           return (
             <li key={item.href}>
-              <Link
+              <AdminLink
                 href={item.href}
                 className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-muted transition-colors hover:bg-ink/5 hover:text-ink"
               >
@@ -166,7 +165,7 @@ function NavGroup({
                 ) : item.count !== undefined ? (
                   <span className="num text-[11px] text-muted/60">{fa(item.count)}</span>
                 ) : null}
-              </Link>
+              </AdminLink>
             </li>
           );
         })}

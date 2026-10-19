@@ -22,7 +22,7 @@ import {
   type FilterState,
 } from "@/lib/filters";
 import { fa } from "@/lib/format";
-import type { Brand, Category, FilterKey, Product } from "@/lib/types";
+import type { Brand, Category, FilterKey, ProductCardData } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -69,7 +69,7 @@ const filterMeta = (brands: Pick<Brand, "slug" | "name">[]): FilterMeta => ({
   },
 });
 
-function coverageOf(p: Product): number {
+function coverageOf(p: ProductCardData): number {
   return p.kpis.find((k) => k.key === "coverage")?.value ?? 0;
 }
 
@@ -79,7 +79,7 @@ export default function CategoryBrowser({
   brands,
 }: {
   category: Category;
-  items: Product[];
+  items: ProductCardData[];
   brands: Pick<Brand, "slug" | "name">[];
 }) {
   const meta = useMemo(() => filterMeta(brands), [brands]);

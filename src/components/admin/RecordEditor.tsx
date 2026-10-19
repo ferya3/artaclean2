@@ -1,7 +1,7 @@
 "use client";
 
 import { ExternalLink, Save } from "lucide-react";
-import Link from "next/link";
+import AdminLink from "@/components/admin/AdminLink";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 
@@ -109,14 +109,14 @@ export default function RecordEditor({
               رکورد پیش‌نویس از فهرست‌ها، جستجو، منو و مشاور حذف می‌شود و صفحه‌اش ۴۰۴ می‌دهد.
             </p>
             {publicPath && !isNew && (
-              <Link
+              <AdminLink
                 href={publicPath}
                 target="_blank"
                 className="flex items-center gap-1.5 text-xs text-accent"
               >
                 <ExternalLink className="size-3.5" aria-hidden />
                 دیدن در سایت
-              </Link>
+              </AdminLink>
             )}
           </Card>
         )}

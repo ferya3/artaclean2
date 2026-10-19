@@ -1,33 +1,61 @@
-import { ChevronDown, ChevronUp, Eye, EyeOff, Pencil, Plus } from "lucide-react";
-import Link from "next/link";
+import { ChevronDown, ChevronUp, Eye, EyeOff, Pencil, Plus, Search } from "lucide-react";
 import { notFound } from "next/navigation";
 
-import {
-  moveContentAction,
-  togglePublishedAction,
-} from "@/app/(admin)/admin/actions";
+import { moveContentAction, togglePublishedAction } from "@/app/(admin)/admin/actions";
+import AdminLink from "@/components/admin/AdminLink";
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { getSchema } from "@/lib/admin/schemas";
-import { listRows } from "@/lib/db/content";
+import { listSummaries } from "@/lib/db/content";
 import { fa } from "@/lib/format";
+import { normalize } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
-type Params = { params: Promise<{ collection: string }> };
+/** تعداد ردیف در هر صفحه — بالاتر از این، هم DOM و هم payload سنگین می‌شود. */
+const PER_PAGE = 50;
 
-export default async function CollectionListPage({ params }: Params) {
+type Params = {
+  params: Promise<{ collection: string }>;
+  searchParams: Promise<{ q?: string | string[]; page?: string | string[] }>;
+};
+
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+export default async function CollectionListPage({ params, searchParams }: Params) {
   const { collection } = await params;
+  const sp = await searchParams;
   const schema = getSchema(collection);
   if (!schema) notFound();
 
-  const rows = listRows(collection, true);
+  // فهرست فقط به عنوان و زیرعنوان نیاز دارد؛ بدنه کامل رکوردها خوانده
+  // نمی‌شود تا صفحه با رشد کاتالوگ کند نشود.
+  const fields = [schema.titleField, schema.subtitleField].filter(
+    (f): f is string => Boolean(f),
+  );
+  const all = listSummaries(collection, fields);
 
-  const textOf = (data: unknown, key?: string): string => {
-    if (!key) return "";
-    const value = (data as Record<string, unknown>)?.[key];
-    if (typeof value === "string") return value;
-    if (typeof value === "number") return String(value);
-    return "";
+  const query = (one(sp.q) ?? "").trim();
+  const needle = normalize(query);
+  const filtered = needle
+    ? all.filter((row) =>
+        normalize([row.slug, ...row.values.filter(Boolean)].join(" ")).includes(needle),
+      )
+    : all;
+
+  const pages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  const page = Math.min(pages, Math.max(1, Number(one(sp.page) ?? 1) || 1));
+  const rows = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  // ترتیب دستی فقط وقتی معنا دارد که کل فهرست دیده شود؛ با فیلتر یا
+  // صفحه‌بندی، «یک پله بالا» نسبت به چه چیزی؟
+  const orderable = schema.orderable && !needle && pages === 1;
+
+  const pageHref = (n: number) => {
+    const qs = new URLSearchParams();
+    if (query) qs.set("q", query);
+    if (n > 1) qs.set("page", String(n));
+    const s = qs.toString();
+    return `/admin/c/${collection}${s ? `?${s}` : ""}`;
   };
 
   return (
@@ -39,24 +67,54 @@ export default async function CollectionListPage({ params }: Params) {
             <p className="mt-2 max-w-2xl text-sm leading-7 text-muted">{schema.blurb}</p>
           )}
         </div>
-        <Link
+        <AdminLink
           href={`/admin/c/${collection}/new`}
           className={buttonVariants({ variant: "accent", size: "sm" })}
         >
           <Plus className="size-4" aria-hidden />
           افزودن {schema.singular}
-        </Link>
+        </AdminLink>
       </div>
+
+      {all.length > 20 && (
+        <form method="get" className="mt-6 flex gap-2">
+          <div className="relative flex-1">
+            <Search
+              className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted"
+              aria-hidden
+            />
+            <input
+              name="q"
+              defaultValue={query}
+              placeholder={`جستجو در ${schema.title}…`}
+              className="w-full rounded-xl border border-line bg-surface py-3 pe-3.5 ps-10 text-sm outline-none transition-colors focus:border-accent"
+            />
+          </div>
+          <button type="submit" className={buttonVariants({ variant: "outline", size: "sm" })}>
+            جستجو
+          </button>
+          {query && (
+            <AdminLink
+              href={`/admin/c/${collection}`}
+              className={buttonVariants({ variant: "quiet", size: "sm" })}
+            >
+              پاک کردن
+            </AdminLink>
+          )}
+        </form>
+      )}
 
       {rows.length === 0 ? (
         <Card className="mt-8 px-6 py-16 text-center">
-          <p className="font-semibold">هنوز موردی ثبت نشده است</p>
+          <p className="font-semibold">{needle ? "چیزی پیدا نشد" : "هنوز موردی ثبت نشده است"}</p>
           <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted">
-            با دکمه «افزودن {schema.singular}» نخستین مورد را بسازید.
+            {needle
+              ? "عبارت دیگری را امتحان کنید یا فیلتر را پاک کنید."
+              : `با دکمه «افزودن ${schema.singular}» نخستین مورد را بسازید.`}
           </p>
         </Card>
       ) : (
-        <Card className="mt-8 overflow-hidden p-0">
+        <Card className="mt-6 overflow-hidden p-0">
           <ul className="divide-y divide-line">
             {rows.map((row, index) => {
               const editHref = `/admin/c/${collection}/${encodeURIComponent(row.slug)}`;
@@ -68,7 +126,7 @@ export default async function CollectionListPage({ params }: Params) {
                     !row.published && "bg-canvas",
                   )}
                 >
-                  {schema.orderable && (
+                  {orderable && (
                     <div className="flex shrink-0 flex-col">
                       <OrderButton
                         collection={collection}
@@ -86,12 +144,12 @@ export default async function CollectionListPage({ params }: Params) {
                   )}
 
                   <div className="min-w-0 flex-1">
-                    <Link href={editHref} className="block truncate font-medium hover:text-accent">
-                      {textOf(row.data, schema.titleField) || row.slug}
-                    </Link>
+                    <AdminLink href={editHref} className="block truncate font-medium hover:text-accent">
+                      {row.values[0] || row.slug}
+                    </AdminLink>
                     <span className="num mt-0.5 block truncate text-[11px] text-muted" dir="ltr">
-                      {schema.subtitleField
-                        ? `${row.slug} · ${textOf(row.data, schema.subtitleField)}`
+                      {schema.subtitleField && row.values[1]
+                        ? `${row.slug} · ${row.values[1]}`
                         : row.slug}
                     </span>
                   </div>
@@ -121,13 +179,13 @@ export default async function CollectionListPage({ params }: Params) {
                         </button>
                       </form>
                     )}
-                    <Link
+                    <AdminLink
                       href={editHref}
                       className="rounded-lg border border-line p-2 text-muted transition-colors hover:border-ink/30 hover:text-ink"
                       aria-label="ویرایش"
                     >
                       <Pencil className="size-4" aria-hidden />
-                    </Link>
+                    </AdminLink>
                   </div>
                 </li>
               );
@@ -136,11 +194,43 @@ export default async function CollectionListPage({ params }: Params) {
         </Card>
       )}
 
-      <p className="mt-4 text-xs text-muted">
-        <span className="num">{fa(rows.length)}</span> مورد
-        {schema.orderable && " — ترتیب این فهرست، همان ترتیب نمایش در سایت است."}
-      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-muted">
+          <span className="num">{fa(filtered.length)}</span> مورد
+          {needle && ` از ${fa(all.length)}`}
+          {orderable && " — ترتیب این فهرست، همان ترتیب نمایش در سایت است."}
+          {schema.orderable && !orderable && " — برای تغییر ترتیب، جستجو را پاک کنید."}
+        </p>
+
+        {pages > 1 && (
+          <div className="flex items-center gap-1.5">
+            <PageLink href={pageHref(page - 1)} disabled={page === 1} label="قبلی" />
+            <span className="num text-xs text-muted">
+              {fa(page)} / {fa(pages)}
+            </span>
+            <PageLink href={pageHref(page + 1)} disabled={page === pages} label="بعدی" />
+          </div>
+        )}
+      </div>
     </>
+  );
+}
+
+function PageLink({ href, disabled, label }: { href: string; disabled: boolean; label: string }) {
+  if (disabled) {
+    return (
+      <span className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted/40">
+        {label}
+      </span>
+    );
+  }
+  return (
+    <AdminLink
+      href={href}
+      className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted transition-colors hover:border-ink/30 hover:text-ink"
+    >
+      {label}
+    </AdminLink>
   );
 }
 

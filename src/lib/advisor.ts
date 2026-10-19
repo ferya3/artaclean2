@@ -1,5 +1,11 @@
 import { areaBandRange } from "@/lib/data/taxonomy";
-import type { AreaBand, DirtKind, FrequencyBand, Product, SurfaceKind } from "@/lib/types";
+import type {
+  AreaBand,
+  DirtKind,
+  FrequencyBand,
+  ProductCardData,
+  SurfaceKind,
+} from "@/lib/types";
 
 /**
  * موتور Product Advisor.
@@ -21,7 +27,7 @@ export interface AdvisorAnswers {
 }
 
 export interface AdvisorResult {
-  product: Product;
+  product: ProductCardData;
   score: number;
   /** درصد تناسب برای نمایش. */
   match: number;
@@ -37,7 +43,7 @@ const WEIGHTS = {
 } as const;
 
 /** هم‌پوشانی بازه متراژ کاربر با بازه پوششی دستگاه، به‌صورت نسبت ۰ تا ۱. */
-function areaOverlap(band: AreaBand, p: Product): number {
+function areaOverlap(band: AreaBand, p: ProductCardData): number {
   const [uMin, uMax] = areaBandRange[band];
   const { areaMin, areaMax } = p.facets;
   const overlap = Math.min(uMax, areaMax) - Math.max(uMin, areaMin);
@@ -45,7 +51,7 @@ function areaOverlap(band: AreaBand, p: Product): number {
   return overlap / (uMax - uMin);
 }
 
-function scoreAll(answers: AdvisorAnswers, pool: Product[]): AdvisorResult[] {
+function scoreAll(answers: AdvisorAnswers, pool: ProductCardData[]): AdvisorResult[] {
   return pool.map<AdvisorResult>((product) => {
     let score = 0;
     let possible = 0;
@@ -124,7 +130,7 @@ function rank(results: AdvisorResult[], threshold: number, limit: number): Advis
  */
 export function recommend(
   answers: AdvisorAnswers,
-  machines: Product[],
+  machines: ProductCardData[],
   limit = 6,
 ): AdvisorResult[] {
   if (Object.values(answers).filter(Boolean).length === 0) return [];
@@ -134,7 +140,7 @@ export function recommend(
 /** مصرفی‌ها و لوازم مکمل — کنار دستگاه پیشنهاد می‌شوند، نه به‌جای آن. */
 export function recommendComplements(
   answers: AdvisorAnswers,
-  consumables: Product[],
+  consumables: ProductCardData[],
   limit = 3,
 ): AdvisorResult[] {
   if (!answers.dirt && !answers.surface) return [];
@@ -147,7 +153,7 @@ export function recommendComplements(
  */
 export function recommendAmong(
   slugs: string[],
-  pool: Product[],
+  pool: ProductCardData[],
   band?: AreaBand,
 ): { slug: string; why: string } | null {
   const picked = pool.filter((p) => slugs.includes(p.slug));
