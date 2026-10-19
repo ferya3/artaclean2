@@ -19,7 +19,7 @@ npm run typecheck
 
 | لایه | انتخاب |
 | --- | --- |
-| فریم‌ورک | Next.js 15 (App Router) · React 19 · TypeScript 5.9 |
+| فریم‌ورک | Next.js 16 (App Router) · React 19 · TypeScript 5.9 |
 | استایل | Tailwind CSS 4 (پیکربندی در CSS، بدون `tailwind.config`) |
 | کامپوننت پایه | به سبک shadcn/ui — `cva` + `clsx` + `tailwind-merge` + `@radix-ui/react-slot` |
 | آیکون | `lucide-react` |
@@ -171,6 +171,15 @@ src/app/
 - همه‌جا `prefers-reduced-motion` رعایت می‌شود.
 
 ---
+
+## نکته‌ای درباره build موازی
+
+Next صفحات را هنگام build در چند worker **جدا** prerender می‌کند. هر worker یک
+پروسه است و همه به یک فایل SQLite وصل می‌شوند. به همین دلیل `migrate()` اول با
+یک خواندن بررسی می‌کند که آیا اصلاً نیازی به DDL هست — وگرنه workerها روی
+نوشتن به هم قفل می‌خورند و build با `database is locked` می‌افتد. اگر جدول
+جدیدی اضافه می‌کنید، آن را **قبل از** `media` بگذارید؛ وجود `media` معیار
+«schema کامل است» در همان بررسی است.
 
 ## استقرار
 
