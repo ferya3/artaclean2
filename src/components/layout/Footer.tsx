@@ -1,8 +1,9 @@
 import Link from "next/link";
 
-import { footerNav } from "@/lib/nav";
+import type { SiteNav } from "@/lib/nav";
+import type { SiteSettings } from "@/lib/site";
 
-export default function Footer() {
+export default function Footer({ nav, site }: { nav: SiteNav; site: SiteSettings }) {
   return (
     <footer className="section-deep grain">
       <div
@@ -16,33 +17,46 @@ export default function Footer() {
           <div className="lg:col-span-4">
             <div className="flex items-center gap-2.5">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-accent to-accent-2 text-sm font-black text-white">
-                AC
+                {site.brandShort}
               </span>
-              <span className="text-[17px] font-extrabold text-white">آرتا کلین</span>
+              <span className="text-[17px] font-extrabold text-white">{site.brandName}</span>
             </div>
-            <p className="mt-5 max-w-sm text-sm leading-8 text-white/50">
-              تأمین تجهیزات نظافت صنعتی، مشاوره انتخاب دستگاه بر اساس شرایط واقعی سایت، و پشتیبانی
-              فنی و قطعات پس از فروش.
-            </p>
+            <p className="mt-5 max-w-sm text-sm leading-8 text-white/50">{site.footerAbout}</p>
 
             <a
-              href="tel:+982100000000"
+              href={`tel:${site.phone}`}
               className="num mt-7 block text-2xl font-black text-white transition-colors hover:text-accent"
               dir="ltr"
             >
-              021-0000 0000
+              {site.phoneDisplay}
             </a>
             <a
-              href="mailto:sales@example.com"
+              href={`mailto:${site.email}`}
               className="mt-1 block text-sm text-white/45 transition-colors hover:text-white"
               dir="ltr"
             >
-              sales@example.com
+              {site.email}
             </a>
+
+            {site.social.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-4 text-sm text-white/45">
+                {site.social.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="grid gap-10 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-4">
-            {footerNav.map((col) => (
+            {nav.footer.map((col) => (
               <div key={col.title}>
                 <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white/35">
                   {col.title}
@@ -65,7 +79,9 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col gap-3 border-t border-white/10 pt-7 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} آرتا کلین — همه حقوق محفوظ است.</p>
+          <p>
+            © {new Date().getFullYear()} {site.brandName} — همه حقوق محفوظ است.
+          </p>
           <div className="flex gap-6">
             <Link href="/advisor" className="transition-colors hover:text-white">
               انتخاب دستگاه

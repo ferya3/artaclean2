@@ -1,11 +1,15 @@
-import { articles } from "@/lib/data/knowledge";
-import { brands } from "@/lib/data/brands";
-import { industries } from "@/lib/data/industries";
-import { spareParts } from "@/lib/data/parts";
-import { products } from "@/lib/data/products";
-import { services } from "@/lib/data/services";
-import { categories } from "@/lib/data/taxonomy";
-import type { AreaBand, DirtKind, SurfaceKind } from "@/lib/types";
+import type {
+  AreaBand,
+  Article,
+  Brand,
+  Category,
+  DirtKind,
+  Industry,
+  Product,
+  Service,
+  SparePart,
+  SurfaceKind,
+} from "@/lib/types";
 
 /**
  * جست‌وجوی نیت‌محور.
@@ -19,7 +23,21 @@ import type { AreaBand, DirtKind, SurfaceKind } from "@/lib/types";
  * پیاده‌سازی فعلی روی مترادف‌های دستی کار می‌کند و کاملاً سمت سرور اجرا می‌شود.
  * نقطه اتصال آینده: جایگزینی scoreText با یک ایندکس برداری/معنایی، بدون تغییر
  * در امضای توابع.
+ *
+ * داده به‌صورت پارامتر می‌آید و import نمی‌شود: کاتالوگ حالا در دیتابیس است و
+ * اگر این ماژول خودش آن را بخواند، دیگر از کلاینت قابل فراخوانی نیست. فراخوان
+ * سمت سرور، corpus را از `src/lib/content.ts` می‌سازد.
  */
+
+export interface SearchCorpus {
+  products: Product[];
+  categories: Category[];
+  industries: Industry[];
+  articles: Article[];
+  parts: SparePart[];
+  services: Service[];
+  brands: Brand[];
+}
 
 export type SearchGroup = "products" | "solutions" | "knowledge" | "parts" | "services" | "brands";
 
@@ -150,13 +168,13 @@ function scoreText(query: string, haystacks: { text: string; weight: number }[])
   return score;
 }
 
-export function search(query: string): SearchHit[] {
+export function search(query: string, corpus: SearchCorpus): SearchHit[] {
   const q = normalize(query);
   if (q.length < 2) return [];
   const intent = extractIntent(query);
   const hits: SearchHit[] = [];
 
-  for (const p of products) {
+  for (const p of corpus.products) {
     let score = scoreText(q, [
       { text: p.name, weight: 6 },
       { text: p.model, weight: 8 },
@@ -164,7 +182,7 @@ export function search(query: string): SearchHit[] {
       { text: p.summary, weight: 1.5 },
       { text: p.subcategory ?? "", weight: 2 },
       { text: p.brand, weight: 3 },
-      { text: categories.find((c) => c.slug === p.category)?.name ?? "", weight: 4 },
+      { text: corpus.categories.find((c) => c.slug === p.category)?.name ?? "", weight: 4 },
     ]);
 
     // امتیاز نیت: جمله‌ای مثل «روغن روی کف» بدون هیچ واژه مشترکی با نام محصول،
@@ -183,7 +201,7 @@ export function search(query: string): SearchHit[] {
     }
   }
 
-  for (const c of categories) {
+  for (const c of corpus.categories) {
     const score = scoreText(q, [
       { text: c.name, weight: 7 },
       { text: c.latin, weight: 5 },
@@ -200,7 +218,7 @@ export function search(query: string): SearchHit[] {
     }
   }
 
-  for (const i of industries) {
+  for (const i of corpus.industries) {
     let score = scoreText(q, [
       { text: i.name, weight: 7 },
       { text: i.latin, weight: 4 },
@@ -219,7 +237,7 @@ export function search(query: string): SearchHit[] {
     }
   }
 
-  for (const a of articles) {
+  for (const a of corpus.articles) {
     const score = scoreText(q, [
       { text: a.title, weight: 6 },
       { text: a.excerpt, weight: 2 },
@@ -236,7 +254,7 @@ export function search(query: string): SearchHit[] {
     }
   }
 
-  for (const part of spareParts) {
+  for (const part of corpus.parts) {
     const score = scoreText(q, [
       { text: part.partNo, weight: 9 },
       { text: part.title, weight: 5 },
@@ -254,7 +272,7 @@ export function search(query: string): SearchHit[] {
     }
   }
 
-  for (const s of services) {
+  for (const s of corpus.services) {
     const score = scoreText(q, [
       { text: s.name, weight: 6 },
       { text: s.latin, weight: 4 },
@@ -271,7 +289,7 @@ export function search(query: string): SearchHit[] {
     }
   }
 
-  for (const b of brands) {
+  for (const b of corpus.brands) {
     const score = scoreText(q, [
       { text: b.name, weight: 7 },
       { text: b.blurb, weight: 1 },

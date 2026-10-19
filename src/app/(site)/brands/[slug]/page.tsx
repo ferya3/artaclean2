@@ -4,9 +4,7 @@ import { notFound } from "next/navigation";
 
 import ProductCard from "@/components/product/ProductCard";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { brands, getBrand } from "@/lib/data/brands";
-import { spareParts } from "@/lib/data/parts";
-import { catalogByBrand } from "@/lib/catalog";
+import { getBrand, getBrands, getParts, productsByBrand } from "@/lib/content";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,7 +12,7 @@ import { cn } from "@/lib/utils";
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return brands.map((b) => ({ slug: b.slug }));
+  return getBrands().map((b) => ({ slug: b.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -33,9 +31,9 @@ export default async function BrandPage({ params }: Params) {
   const brand = getBrand(slug);
   if (!brand) notFound();
 
-  const items = catalogByBrand(brand.slug);
+  const items = productsByBrand(brand.slug);
   const models = new Set(items.map((i) => i.slug));
-  const parts = spareParts.filter((p) => p.fitsModels.some((m) => models.has(m)));
+  const parts = getParts().filter((p) => p.fitsModels.some((m) => models.has(m)));
 
   return (
     <>

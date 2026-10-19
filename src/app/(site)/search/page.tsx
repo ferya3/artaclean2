@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import { areaLabels, dirtLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
+import { searchCorpus } from "@/lib/content";
 import { extractIntent, groupHits, groupLabels, search } from "@/lib/search";
 import { buttonVariants } from "@/components/ui/button";
 import { chipVariants } from "@/components/ui/card";
@@ -19,7 +20,7 @@ type Search = { searchParams: Promise<{ q?: string | string[] }> };
 export default async function SearchPage({ searchParams }: Search) {
   const sp = await searchParams;
   const q = (Array.isArray(sp.q) ? sp.q[0] : sp.q) ?? "";
-  const hits = q ? search(q) : [];
+  const hits = q ? search(q, searchCorpus()) : [];
   const groups = groupHits(hits);
   const intent = q ? extractIntent(q) : {};
   const hasIntent = Boolean(intent.surface || intent.dirt || intent.area);

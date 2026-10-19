@@ -1,7 +1,7 @@
 "use client";
 
 import Counter from "@/components/motion/Counter";
-import { specRatio } from "@/lib/scale";
+import { useSpecRatio } from "@/components/providers/SiteData";
 import type { Spec } from "@/lib/types";
 
 /**
@@ -11,10 +11,12 @@ import type { Spec } from "@/lib/types";
  * آن را در مقیاس کل کاتالوگ نشان می‌دهد.
  */
 export default function KpiStrip({ kpis }: { kpis: Spec[] }) {
+  const ratioOf = useSpecRatio();
+
   return (
     <div className="grid gap-px overflow-hidden rounded-xl2 border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
       {kpis.map((spec) => {
-        const ratio = specRatio(spec.key, spec.value);
+        const ratio = ratioOf(spec.key, spec.value);
         return (
           <div key={spec.key} className="group bg-surface px-6 py-9 transition-colors hover:bg-canvas">
             {spec.value !== undefined ? (

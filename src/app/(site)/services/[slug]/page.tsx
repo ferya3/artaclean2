@@ -3,14 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { getService, services } from "@/lib/data/services";
+import { getService, getServices } from "@/lib/content";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return services.map((s) => ({ slug: s.slug }));
+  return getServices().map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -29,7 +29,7 @@ export default async function ServicePage({ params }: Params) {
   const service = getService(slug);
   if (!service) notFound();
 
-  const others = services.filter((s) => s.slug !== service.slug);
+  const others = getServices().filter((s) => s.slug !== service.slug);
 
   return (
     <>

@@ -7,34 +7,37 @@ import HeroStage from "@/components/three/HeroStage";
 import ProductVisual from "@/components/ui/ProductVisual";
 import Reveal from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/ui/Primitives";
-import { brands } from "@/lib/data/brands";
-import { industries } from "@/lib/data/industries";
-import { articles, articleKindLabels, projects } from "@/lib/data/knowledge";
-import { catalog } from "@/lib/catalog";
-import { services } from "@/lib/data/services";
-import { categories } from "@/lib/data/taxonomy";
+import {
+  getArticles,
+  getBrands,
+  getCategories,
+  getIndustries,
+  getProducts,
+  getProjects,
+  getServices,
+} from "@/lib/content";
+import { articleKindLabels } from "@/lib/data/knowledge";
+import { homeSettings } from "@/lib/site";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const FEATURED = ["vertex-r850", "arta-s700", "arta-w800", "vertex-ax60"];
-
-const TRUST = [
-  {
-    title: "مشاوره فنی پیش از خرید",
-    body: "انتخاب دستگاه بر اساس متراژ، نوع کف و آلودگی واقعی سایت — نه بر اساس موجودی انبار.",
-  },
-  { title: "گارانتی مکتوب", body: "۱۲ ماه دستگاه و ۲۴ ماه باتری لیتیوم، با شرایط شفاف پیش از خرید." },
-  { title: "سرویس در محل", body: "قرارداد نگهداری پیشگیرانه و اعزام تکنسین برای خرابی اضطراری." },
-  { title: "قطعات تا ۱۰ سال", body: "تأمین مصرفی و قطعه یدکی برای تمام مدل‌های فروخته‌شده." },
-  { title: "آموزش اپراتور", body: "دوره در محل؛ چون بیشتر خرابی‌های زودرس ریشه در استفاده نادرست دارد." },
-];
-
 export default function HomePage() {
-  const all = catalog();
-  const featured = FEATURED.map((slug) => all.find((p) => p.slug === slug)).filter(
-    (p): p is NonNullable<typeof p> => Boolean(p),
-  );
+  // همه متن‌های این صفحه و فهرست «منتخب» از تنظیمات می‌آید؛ ساختار و چیدمان
+  // در کد می‌ماند. مرز عمدی است: واحد فروش باید متن و انتخاب را عوض کند،
+  // نه گرید و انیمیشن را.
+  const home = homeSettings();
+  const all = getProducts();
+  const brands = getBrands();
+  const categories = getCategories();
+  const industries = getIndustries();
+  const services = getServices();
+  const projects = getProjects();
+  const articles = getArticles();
+
+  const featured = home.featured
+    .map((slug) => all.find((p) => p.slug === slug))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
     <>
@@ -55,7 +58,7 @@ export default function HomePage() {
             <Reveal>
               <p className="eyebrow-accent flex items-center gap-3">
                 <span className="h-px w-10 bg-accent" aria-hidden />
-                تجهیزات نظافت صنعتی
+                {home.heroEyebrow}
               </p>
             </Reveal>
 
@@ -63,41 +66,40 @@ export default function HomePage() {
               {/* هر سطر عمداً whitespace-nowrap است: شکستن خودکار خط در فارسی،
                   عبارت گرادیانی را دو تکه می‌کرد و ریتم تیتر را از بین می‌برد. */}
               <h1 className="mt-6 text-[clamp(1.9rem,4.6vw,3.5rem)] font-black leading-[1.16] tracking-tight text-white">
-                <span className="block whitespace-nowrap">نظافت صنعتی،</span>
-                <span className="gradient-text block whitespace-nowrap">سریع‌تر و ارزان‌تر</span>
+                <span className="block whitespace-nowrap">{home.heroTitleTop}</span>
+                <span className="gradient-text block whitespace-nowrap">{home.heroTitleAccent}</span>
               </h1>
             </Reveal>
 
             <Reveal delay={160}>
-              <p className="mt-6 max-w-xl text-lg leading-9 text-white/60">
-                از کارخانه و انبار تا بیمارستان و مجتمع تجاری. ما اول شرایط سایت شما را می‌سنجیم،
-                بعد دستگاه پیشنهاد می‌دهیم — نه برعکس.
-              </p>
+              <p className="mt-6 max-w-xl text-lg leading-9 text-white/60">{home.heroLead}</p>
             </Reveal>
 
             <Reveal delay={240}>
               {/* روی موبایل تمام‌عرض و روی هم؛ wrap ساده باعث می‌شد دکمه دوم
                   با عرض متفاوت، پله‌ای و نامرتب بنشیند. */}
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "w-full px-6 py-3.5 text-[15px] sm:w-auto")}>
-                  دستگاه مناسبم را پیدا کن
+                <Link
+                  href={home.heroPrimaryHref}
+                  className={cn(buttonVariants({ variant: "accent" }), "w-full px-6 py-3.5 text-[15px] sm:w-auto")}
+                >
+                  {home.heroPrimaryLabel}
                 </Link>
-                <Link href="/products" className={cn(buttonVariants({ variant: "glass" }), "w-full px-6 py-3.5 text-[15px] sm:w-auto")}>
-                  مشاهده تجهیزات
+                <Link
+                  href={home.heroSecondaryHref}
+                  className={cn(buttonVariants({ variant: "glass" }), "w-full px-6 py-3.5 text-[15px] sm:w-auto")}
+                >
+                  {home.heroSecondaryLabel}
                 </Link>
               </div>
             </Reveal>
 
             <Reveal delay={320}>
               <dl className="mt-12 grid max-w-lg grid-cols-3 gap-8">
-                {[
-                  { v: "۲۸", l: "سال سابقه" },
-                  { v: "۱۲۰۰+", l: "دستگاه نصب‌شده" },
-                  { v: "۹۶٪", l: "تمدید قرارداد سرویس" },
-                ].map((stat) => (
-                  <div key={stat.l}>
-                    <dt className="text-3xl font-black text-white">{stat.v}</dt>
-                    <dd className="mt-1.5 text-xs leading-5 text-white/45">{stat.l}</dd>
+                {home.stats.map((stat) => (
+                  <div key={stat.label}>
+                    <dt className="text-3xl font-black text-white">{stat.value}</dt>
+                    <dd className="mt-1.5 text-xs leading-5 text-white/45">{stat.label}</dd>
                   </div>
                 ))}
               </dl>
@@ -116,17 +118,17 @@ export default function HomePage() {
               {/* هر دو پلاک سمت start می‌نشینند: بدنه دستگاه به سمت end متمایل
                   است و پلاک شناور نباید روی خطوط طرح بیفتد. */}
               <div className="absolute -start-2 top-8 rounded-xl border border-white/10 bg-deep/85 px-4 py-2.5 backdrop-blur sm:start-4">
-                <p className="num text-xl font-black text-white">5,000</p>
-                <p className="text-[10px] text-white/45">m²/h راندمان</p>
+                <p className="num text-xl font-black text-white">{home.badgeOneValue}</p>
+                <p className="text-[10px] text-white/45">{home.badgeOneLabel}</p>
               </div>
 
               <div className="absolute -start-2 top-32 rounded-xl border border-white/10 bg-deep/85 px-4 py-2.5 backdrop-blur sm:start-4">
-                <p className="num text-xl font-black text-white">5.5</p>
-                <p className="text-[10px] text-white/45">ساعت کارکرد</p>
+                <p className="num text-xl font-black text-white">{home.badgeTwoValue}</p>
+                <p className="text-[10px] text-white/45">{home.badgeTwoLabel}</p>
               </div>
 
               <div className="absolute bottom-2 start-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-deep/85 px-4 py-1.5 text-[11px] text-white/60 backdrop-blur">
-                یک اپراتور · یک شیفت · ۱۸٬۰۰۰ متر مربع
+                {home.heroCaption}
               </div>
             </div>
           </Reveal>
@@ -143,7 +145,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════ برندها — نوار */}
       <section className="border-b border-line py-10">
         <div className="shell flex flex-wrap items-center justify-center gap-x-14 gap-y-5 opacity-60">
-          <span className="text-xs text-muted">برندهای موجود در کاتالوگ:</span>
+          <span className="text-xs text-muted">{home.brandsLabel}</span>
           {brands.map((b) => (
             <Link
               key={b.slug}
@@ -160,9 +162,9 @@ export default function HomePage() {
       <section className="shell py-20">
         <Reveal>
           <SectionHeading
-            eyebrow="محصولات"
-            title="دسته‌بندی تجهیزات"
-            lead="اگر می‌دانید دنبال چه نوع دستگاهی هستید، از اینجا شروع کنید."
+            eyebrow={home.categoriesEyebrow}
+            title={home.categoriesTitle}
+            lead={home.categoriesLead}
             action={
               <Link href="/products" className={buttonVariants({ variant: "outline", size: "sm" })}>
                 همه دسته‌ها ←
@@ -196,9 +198,9 @@ export default function HomePage() {
         <div className="shell">
           <Reveal>
             <SectionHeading
-              eyebrow="منتخب"
-              title="پرکاربردترین دستگاه‌ها"
-              lead="مدل‌هایی که بیشترین تناسب را با سایت‌های صنعتی ایران داشته‌اند."
+              eyebrow={home.featuredEyebrow}
+              title={home.featuredTitle}
+              lead={home.featuredLead}
               action={
                 <Link href="/products" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   همه محصولات ←
@@ -226,9 +228,9 @@ export default function HomePage() {
           <Reveal>
             <SectionHeading
               tone="deep"
-              eyebrow="راهکارها"
-              title="اگر مدل دستگاه را نمی‌دانید، از مسئله شروع کنید"
-              lead="هر صنعت، ترکیب آلودگی و محدودیت خودش را دارد. راهکار را از همان‌جا می‌بندیم."
+              eyebrow={home.solutionsEyebrow}
+              title={home.solutionsTitle}
+              lead={home.solutionsLead}
               action={
                 <Link href="/solutions" className={buttonVariants({ variant: "glass", size: "sm" })}>
                   همه راهکارها ←
@@ -268,12 +270,12 @@ export default function HomePage() {
       <section className="shell py-20">
         <Reveal>
           <SectionHeading
-            eyebrow="چرا ما"
-            title="خرید دستگاه صنعتی، نقطه پایان معامله نیست؛ نقطه شروع رابطه است"
+            eyebrow={home.trustEyebrow}
+            title={home.trustTitle}
           />
         </Reveal>
         <div className="grid gap-px overflow-hidden rounded-xl2 border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
-          {TRUST.map((item, i) => (
+          {home.trust.map((item, i) => (
             <div key={item.title} className="group bg-surface p-7 transition-colors hover:bg-canvas">
               <span className="num block text-xs font-bold text-accent">
                 {String(i + 1).padStart(2, "0")}
@@ -290,9 +292,9 @@ export default function HomePage() {
         <div className="shell">
           <Reveal>
             <SectionHeading
-              eyebrow="پروژه‌ها"
-              title="پروژه‌های اجراشده"
-              lead="مشخصات سایت، دستگاه انتخاب‌شده و نتیجه — به‌جای شعار."
+              eyebrow={home.projectsEyebrow}
+              title={home.projectsTitle}
+              lead={home.projectsLead}
               action={
                 <Link href="/company/projects" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   همه پروژه‌ها ←
@@ -323,9 +325,9 @@ export default function HomePage() {
       <section className="shell py-20">
         <Reveal>
           <SectionHeading
-            eyebrow="خدمات"
-            title="نصب، سرویس، تعمیر، قطعات، آموزش، اجاره"
-            lead="برای تجهیزات صنعتی، خدمات پس از فروش بخشی از فروش است، نه یک صفحه فرعی."
+            eyebrow={home.servicesEyebrow}
+            title={home.servicesTitle}
+            lead={home.servicesLead}
             action={
               <Link href="/services" className={buttonVariants({ variant: "outline", size: "sm" })}>
                 همه خدمات ←
@@ -351,8 +353,8 @@ export default function HomePage() {
         <div className="shell">
           <Reveal>
             <SectionHeading
-              eyebrow="راهنما"
-              title="پیش از خرید، این‌ها را بخوانید"
+              eyebrow={home.knowledgeEyebrow}
+              title={home.knowledgeTitle}
               action={
                 <Link href="/knowledge" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   همه مقالات ←
@@ -386,18 +388,21 @@ export default function HomePage() {
         <div className="shell relative text-center">
           <Reveal>
             <h2 className="mx-auto max-w-3xl text-section font-black text-white text-balance">
-              برای پروژه خودتان دستگاه مناسب پیدا کنید
+              {home.ctaTitle}
             </h2>
-            <p className="mx-auto mt-5 max-w-xl leading-9 text-white/55">
-              متراژ، نوع کف و آلودگی را بگویید؛ فهرست کوتاه دستگاه‌های مناسب به‌همراه برآورد زمان
-              نظافت را دریافت کنید.
-            </p>
+            <p className="mx-auto mt-5 max-w-xl leading-9 text-white/55">{home.ctaLead}</p>
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
-              <Link href="/advisor" className={cn(buttonVariants({ variant: "accent" }), "w-full px-7 py-3.5 text-[15px] sm:w-auto")}>
-                شروع مشاور انتخاب
+              <Link
+                href={home.ctaPrimaryHref}
+                className={cn(buttonVariants({ variant: "accent" }), "w-full px-7 py-3.5 text-[15px] sm:w-auto")}
+              >
+                {home.ctaPrimaryLabel}
               </Link>
-              <Link href="/quote" className={cn(buttonVariants({ variant: "glass" }), "w-full px-7 py-3.5 text-[15px] sm:w-auto")}>
-                درخواست پیش‌فاکتور
+              <Link
+                href={home.ctaSecondaryHref}
+                className={cn(buttonVariants({ variant: "glass" }), "w-full px-7 py-3.5 text-[15px] sm:w-auto")}
+              >
+                {home.ctaSecondaryLabel}
               </Link>
             </div>
           </Reveal>

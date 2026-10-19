@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -7,8 +8,6 @@ const MAX = 4;
 
 interface CompareState {
   items: string[];
-  /** تا وقتی localStorage خوانده نشده، UI نباید فهرست خالی را قطعی فرض کند. */
-  hydrated: boolean;
   toggle: (slug: string) => void;
   remove: (slug: string) => void;
   clear: () => void;
@@ -25,7 +24,6 @@ export const useCompareStore = create<CompareState>()(
   persist(
     (set) => ({
       items: [],
-      hydrated: false,
       toggle: (slug) =>
         set((s) => {
           if (s.items.includes(slug)) return { items: s.items.filter((x) => x !== slug) };
@@ -38,24 +36,48 @@ export const useCompareStore = create<CompareState>()(
     {
       name: "artaclean.compare",
       partialize: (s) => ({ items: s.items }),
-      // در حالت ناشناس یا با storage مسدود، persist خطا می‌دهد؛ UI نباید بشکند.
-      onRehydrateStorage: () => (state) => {
-        useCompareStore.setState({ hydrated: true });
-        void state;
-      },
     },
   ),
 );
 
 export const COMPARE_MAX = MAX;
 
+/**
+ * آمادگی فهرست.
+ *
+ * تا وقتی localStorage خوانده نشده، UI نباید فهرست خالی را قطعی فرض کند —
+ * وگرنه نوار مقایسه یک لحظه ناپدید می‌شود و جدول مقایسه «چیزی انتخاب
+ * نکرده‌اید» نشان می‌دهد.
+ *
+ * این وضعیت از API خود persist خوانده می‌شود، نه از یک فیلد داخل state:
+ * localStorage هم‌زمان با ساخت store خوانده می‌شود و اگر callback بخواهد
+ * همان لحظه `useCompareStore.setState` را صدا بزند، به متغیری اشاره می‌کند
+ * که هنوز مقدار نگرفته است (TDZ) — خطا داخل persist خورده می‌شود و پرچم
+ * برای همیشه false می‌ماند.
+ *
+ * مقدار اولیه عمداً false است و نه `hasHydrated()`: رندر سرور و نخستین رندر
+ * کلاینت باید یکی باشند.
+ */
+function useHydrated(): boolean {
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = useCompareStore.persist.onFinishHydration(() => setHydrated(true));
+    // ممکن است hydration پیش از اجرای این effect تمام شده باشد.
+    if (useCompareStore.persist.hasHydrated()) setHydrated(true);
+    return unsubscribe;
+  }, []);
+
+  return hydrated;
+}
+
 /** همان API قبلی، تا مصرف‌کننده‌ها دست‌نخورده بمانند. */
 export function useCompare() {
   const items = useCompareStore((s) => s.items);
-  const hydrated = useCompareStore((s) => s.hydrated);
   const toggle = useCompareStore((s) => s.toggle);
   const remove = useCompareStore((s) => s.remove);
   const clear = useCompareStore((s) => s.clear);
+  const hydrated = useHydrated();
 
   return {
     items,

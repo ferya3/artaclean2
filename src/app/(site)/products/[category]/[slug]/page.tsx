@@ -10,11 +10,14 @@ import ProductCard from "@/components/product/ProductCard";
 import SpecSheet from "@/components/product/SpecSheet";
 import { Breadcrumbs } from "@/components/ui/Primitives";
 import Reveal from "@/components/motion/Reveal";
-import { getBrand } from "@/lib/data/brands";
-import { spareParts } from "@/lib/data/parts";
-import { getCatalogProduct } from "@/lib/catalog";
-import { getProduct, products } from "@/lib/data/products";
-import { getCategory } from "@/lib/data/taxonomy";
+import {
+  getBrand,
+  getCategory,
+  getIndustries,
+  getParts,
+  getProduct,
+  getProducts,
+} from "@/lib/content";
 import { fa, specValue, toman } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -22,7 +25,7 @@ import { cn } from "@/lib/utils";
 type Params = { params: Promise<{ category: string; slug: string }> };
 
 export function generateStaticParams() {
-  return products.map((p) => ({ category: p.category, slug: p.slug }));
+  return getProducts().map((p) => ({ category: p.category, slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -47,7 +50,7 @@ const SECTIONS = [
 
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
-  const product = getCatalogProduct(slug);
+  const product = getProduct(slug);
   if (!product) notFound();
 
   const category = getCategory(product.category);
@@ -55,7 +58,12 @@ export default async function ProductPage({ params }: Params) {
   const related = product.related
     .map((s) => getProduct(s))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
-  const parts = spareParts.filter((part) => part.fitsModels.includes(product.slug));
+  const parts = getParts().filter((part) => part.fitsModels.includes(product.slug));
+  const industries = getIndustries().map((i) => ({
+    slug: i.slug,
+    name: i.name,
+    blurb: i.blurb,
+  }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -226,7 +234,7 @@ export default async function ProductPage({ params }: Params) {
             </h2>
             <p className="mb-9 text-muted">روی هر محیط بزنید تا کاربرد مشخص همان محیط را ببینید.</p>
           </Reveal>
-          <Applications applications={product.applications} />
+          <Applications applications={product.applications} industries={industries} />
         </div>
       </section>
 

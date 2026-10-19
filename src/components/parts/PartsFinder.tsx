@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { partCategories, spareParts } from "@/lib/data/parts";
-import { products } from "@/lib/data/products";
 import { fa, toman } from "@/lib/format";
 import { normalize } from "@/lib/search";
+import type { Product, SparePart } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -14,14 +13,27 @@ import { cn } from "@/lib/utils";
  * قطعات یدکی مسیر خرید خودش را دارد: کاربر معمولاً از مدل دستگاه یا
  * شماره فنی شروع می‌کند، نه از مرور دسته‌بندی.
  */
-export default function PartsFinder({ initialQuery = "" }: { initialQuery?: string }) {
+export default function PartsFinder({
+  initialQuery = "",
+  parts,
+  products,
+}: {
+  initialQuery?: string;
+  parts: SparePart[];
+  products: Pick<Product, "slug" | "model" | "name">[];
+}) {
   const [model, setModel] = useState("");
   const [category, setCategory] = useState("");
   const [query, setQuery] = useState(initialQuery);
 
+  const partCategories = useMemo(
+    () => Array.from(new Set(parts.map((p) => p.category))),
+    [parts],
+  );
+
   const results = useMemo(() => {
     const q = normalize(query);
-    return spareParts.filter((part) => {
+    return parts.filter((part) => {
       if (model && !part.fitsModels.includes(model)) return false;
       if (category && part.category !== category) return false;
       if (q.length > 1) {
@@ -30,7 +42,7 @@ export default function PartsFinder({ initialQuery = "" }: { initialQuery?: stri
       }
       return true;
     });
-  }, [model, category, query]);
+  }, [parts, model, category, query]);
 
   return (
     <div>

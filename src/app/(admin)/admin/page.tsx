@@ -1,31 +1,34 @@
-import { ArrowLeft, Inbox, Package, TrendingUp } from "lucide-react";
+import { ArrowLeft, Inbox, Package, Plus, Settings, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
-import { catalogIncludingDrafts } from "@/lib/catalog";
+import { buttonVariants } from "@/components/ui/button";
+import { collectionOrder, schemas } from "@/lib/admin/schemas";
+import { countRows } from "@/lib/db/content";
 import { listQuotes, quoteCounts } from "@/lib/db/queries";
 import { fa } from "@/lib/format";
 
 export default function AdminDashboard() {
-  const products = catalogIncludingDrafts();
   const counts = quoteCounts();
   const recent = listQuotes().slice(0, 6);
-
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  const published = products.filter((p) => p.published).length;
+  const products = countRows("products");
 
   const stats = [
     { label: "درخواست جدید", value: counts.new ?? 0, icon: Inbox, href: "/admin/quotes?status=new" },
     { label: "کل درخواست‌ها", value: total, icon: TrendingUp, href: "/admin/quotes" },
-    { label: "محصول منتشرشده", value: published, icon: Package, href: "/admin/products" },
+    {
+      label: "محصول منتشرشده",
+      value: products.published,
+      icon: Package,
+      href: "/admin/c/products",
+    },
   ];
 
   return (
     <>
       <h1 className="text-2xl font-black">داشبورد</h1>
-      <p className="mt-2 text-sm text-muted">
-        وضعیت درخواست‌های فروش و کاتالوگ، در یک نگاه.
-      </p>
+      <p className="mt-2 text-sm text-muted">وضعیت درخواست‌های فروش و محتوای سایت، در یک نگاه.</p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         {stats.map((s) => {
@@ -44,6 +47,50 @@ export default function AdminDashboard() {
             </Link>
           );
         })}
+      </div>
+
+      {/* میان‌بر همه مجموعه‌ها، تا «کجا می‌توانم فلان را عوض کنم» یک کلیک باشد. */}
+      <h2 className="mt-10 text-lg font-bold">محتوای سایت</h2>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {collectionOrder.map((key) => {
+          const schema = schemas[key];
+          const stat = countRows(key);
+          return (
+            <Card key={key} hover className="flex items-center gap-4 p-5">
+              <Link href={`/admin/c/${key}`} className="min-w-0 flex-1">
+                <span className="block truncate font-semibold">{schema.title}</span>
+                <span className="num mt-0.5 block text-xs text-muted">
+                  {fa(stat.total)} مورد
+                  {schema.publishable && stat.total !== stat.published
+                    ? ` · ${fa(stat.total - stat.published)} پیش‌نویس`
+                    : ""}
+                </span>
+              </Link>
+              <Link
+                href={`/admin/c/${key}/new`}
+                className="shrink-0 rounded-lg border border-line p-2 text-muted transition-colors hover:border-ink/30 hover:text-ink"
+                aria-label={`افزودن ${schema.singular}`}
+              >
+                <Plus className="size-4" aria-hidden />
+              </Link>
+            </Card>
+          );
+        })}
+      </div>
+
+      <div className="mt-10 flex flex-wrap gap-3">
+        <Link href="/admin/settings/home" className={buttonVariants({ variant: "outline", size: "sm" })}>
+          <Settings className="size-4" aria-hidden />
+          متن‌های صفحه اصلی
+        </Link>
+        <Link href="/admin/settings/site" className={buttonVariants({ variant: "outline", size: "sm" })}>
+          <Settings className="size-4" aria-hidden />
+          تماس و هویت برند
+        </Link>
+        <Link href="/admin/settings/nav" className={buttonVariants({ variant: "outline", size: "sm" })}>
+          <Settings className="size-4" aria-hidden />
+          منوها
+        </Link>
       </div>
 
       <div className="mt-10 flex items-center justify-between">

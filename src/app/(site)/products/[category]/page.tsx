@@ -5,16 +5,13 @@ import { Suspense } from "react";
 
 import CategoryBrowser from "@/components/catalog/CategoryBrowser";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { getArticle } from "@/lib/data/knowledge";
-import { catalogByCategory } from "@/lib/catalog";
-import { categories, getCategory } from "@/lib/data/taxonomy";
+import { getArticle, getBrands, getCategories, getCategory, productsByCategory } from "@/lib/content";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 type Params = { params: Promise<{ category: string }> };
 
 export function generateStaticParams() {
-  return categories.map((c) => ({ category: c.slug }));
+  return getCategories().map((c) => ({ category: c.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -33,8 +30,9 @@ export default async function CategoryPage({ params }: Params) {
   const cat = getCategory(category);
   if (!cat) notFound();
 
-  const items = catalogByCategory(cat.slug);
+  const items = productsByCategory(cat.slug);
   const guide = cat.buyingGuide ? getArticle(cat.buyingGuide) : undefined;
+  const brands = getBrands().map((b) => ({ slug: b.slug, name: b.name }));
 
   return (
     <>
@@ -63,7 +61,7 @@ export default async function CategoryPage({ params }: Params) {
 
       <div className="shell pb-16">
         <Suspense fallback={<div className="py-20 text-center text-sm text-muted">در حال بارگذاری…</div>}>
-          <CategoryBrowser category={cat} items={items} />
+          <CategoryBrowser category={cat} items={items} brands={brands} />
         </Suspense>
       </div>
     </>

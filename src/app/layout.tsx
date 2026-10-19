@@ -5,16 +5,23 @@ import type { Metadata } from "next";
 import "@fontsource-variable/vazirmatn";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SITE_URL ?? "https://example.com"),
-  title: {
-    default: "آرتا کلین — تجهیزات نظافت صنعتی، راهکار و خدمات",
-    template: "%s | آرتا کلین",
-  },
-  description:
-    "اسکرابر، سویپر، مکنده صنعتی، واترجت و بخارشوی؛ انتخاب دستگاه بر اساس متراژ و نوع آلودگی سایت شما، به‌همراه خدمات نصب، سرویس، قطعات و آموزش.",
-  openGraph: { type: "website", locale: "fa_IR", siteName: "آرتا کلین" },
-};
+import { getPage } from "@/lib/content";
+import { siteSettings } from "@/lib/site";
+
+export function generateMetadata(): Metadata {
+  const site = siteSettings();
+  const home = getPage("home");
+
+  return {
+    metadataBase: new URL(process.env.SITE_URL ?? "https://example.com"),
+    title: {
+      default: home.metaTitle || `${site.brandName} — ${site.description.slice(0, 60)}`,
+      template: `%s | ${site.brandName}`,
+    },
+    description: home.metaDescription || site.description,
+    openGraph: { type: "website", locale: "fa_IR", siteName: site.brandName },
+  };
+}
 
 /**
  * لایه ریشه عمداً خالی از «پوسته» است.

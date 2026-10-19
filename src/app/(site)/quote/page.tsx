@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 
 import QuoteForm from "@/components/quote/QuoteForm";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { getProduct } from "@/lib/data/products";
+import { getIndustries, getPage, getProduct } from "@/lib/content";
+import { siteSettings } from "@/lib/site";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "درخواست پیش‌فاکتور و مشاوره",
-  description:
-    "شرایط سایت، تعداد دستگاه و زمان خرید را وارد کنید تا کارشناس فروش با پیشنهاد فنی و پیش‌فاکتور تماس بگیرد.",
-};
+export function generateMetadata(): Metadata {
+  const page = getPage("quote");
+  return { title: page.metaTitle, description: page.metaDescription };
+}
 
 type Search = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -23,14 +23,13 @@ export default async function QuotePage({ searchParams }: Search) {
   const product = productSlug ? getProduct(productSlug) : undefined;
 
   const preset = product ? `${product.name} (${product.model})` : part ? `قطعه ${part}` : undefined;
+  const page = getPage("quote");
+  const site = siteSettings();
+  const industries = getIndustries().map((i) => ({ slug: i.slug, name: i.name }));
 
   return (
     <>
-      <PageHeader
-        eyebrow="درخواست پیش‌فاکتور"
-        title="بگویید سایت شما چه شکلی است"
-        lead="برای دستگاه چند صد میلیونی، «افزودن به سبد» پاسخ نمی‌دهد. چند پرسش کوتاه، تا پیشنهاد فنی درست و قیمت واقعی به شما برسد."
-      />
+      <PageHeader eyebrow={page.eyebrow} title={page.title} lead={page.lead} />
 
       <div className="shell py-6">
         <Breadcrumbs trail={[{ label: "خانه", href: "/" }, { label: "درخواست پیش‌فاکتور" }]} />
@@ -38,7 +37,7 @@ export default async function QuotePage({ searchParams }: Search) {
 
       <div className="shell grid gap-10 pb-16 lg:grid-cols-12">
         <div className="lg:col-span-8">
-          <QuoteForm presetProduct={preset} />
+          <QuoteForm presetProduct={preset} industries={industries} />
         </div>
 
         <aside className="lg:col-span-4">
@@ -67,8 +66,12 @@ export default async function QuotePage({ searchParams }: Search) {
             <p className="mt-2 text-sm leading-7 text-muted">
               برای خرید صنعتی، یک تماس ده‌دقیقه‌ای معمولاً از پر کردن ده فرم مفیدتر است.
             </p>
-            <a href="tel:+982100000000" className={cn(buttonVariants({ variant: "primary" }), "num mt-4 w-full")} dir="ltr">
-              021-0000 0000
+            <a
+              href={`tel:${site.phone}`}
+              className={cn(buttonVariants({ variant: "primary" }), "num mt-4 w-full")}
+              dir="ltr"
+            >
+              {site.phoneDisplay}
             </a>
           </div>
         </aside>

@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 
 import ProductCard from "@/components/product/ProductCard";
 import { EmptyState } from "@/components/ui/Primitives";
-import { brands } from "@/lib/data/brands";
 import {
   brushTypeLabels,
   machineTypeLabels,
@@ -23,7 +22,7 @@ import {
   type FilterState,
 } from "@/lib/filters";
 import { fa } from "@/lib/format";
-import type { Category, FilterKey, Product } from "@/lib/types";
+import type { Brand, Category, FilterKey, Product } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +35,14 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "area", label: "بزرگ‌ترین بازه متراژ" },
 ];
 
-const FILTER_META: Record<FilterKey, { title: string; options: { value: string; label: string }[] }> = {
+type FilterMeta = Record<FilterKey, { title: string; options: { value: string; label: string }[] }>;
+
+/**
+ * گزینه‌های هر فیلتر.
+ * همه از ثابت‌های کد می‌آیند جز برند، که محتوای قابل ویرایش است و از سرور
+ * می‌رسد — به همین دلیل این جدول تابع است، نه const ماژول.
+ */
+const filterMeta = (brands: Pick<Brand, "slug" | "name">[]): FilterMeta => ({
   machineType: {
     title: "نوع دستگاه",
     options: Object.entries(machineTypeLabels).map(([value, label]) => ({ value, label })),
@@ -61,7 +67,7 @@ const FILTER_META: Record<FilterKey, { title: string; options: { value: string; 
     title: "برند",
     options: brands.map((b) => ({ value: b.slug, label: b.name })),
   },
-};
+});
 
 function coverageOf(p: Product): number {
   return p.kpis.find((k) => k.key === "coverage")?.value ?? 0;
@@ -70,10 +76,13 @@ function coverageOf(p: Product): number {
 export default function CategoryBrowser({
   category,
   items,
+  brands,
 }: {
   category: Category;
   items: Product[];
+  brands: Pick<Brand, "slug" | "name">[];
 }) {
+  const meta = useMemo(() => filterMeta(brands), [brands]);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -103,13 +112,13 @@ export default function CategoryBrowser({
   const panel = (
     <div className="space-y-6">
       {category.filters.map((key) => {
-        const meta = FILTER_META[key];
+        const info = meta[key];
         const selected = state[key] ?? [];
         return (
           <fieldset key={key}>
-            <legend className="eyebrow mb-3">{meta.title}</legend>
+            <legend className="eyebrow mb-3">{info.title}</legend>
             <div className="space-y-2">
-              {meta.options.map((opt) => {
+              {info.options.map((opt) => {
                 const count = facetCount(items, state, key, opt.value);
                 const checked = selected.includes(opt.value);
                 if (count === 0 && !checked) return null;

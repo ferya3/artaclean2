@@ -2,28 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { articleKindLabels, articles } from "@/lib/data/knowledge";
+import { getArticles, getPage } from "@/lib/content";
+import { articleKindLabels } from "@/lib/data/knowledge";
 import { fa } from "@/lib/format";
 import type { Article } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "راهنمای خرید و مقالات",
-  description:
-    "راهنمای انتخاب اسکرابر و مکنده صنعتی، مقایسه دستگاه‌ها، راهنمای نگهداری باتری و نظافت انواع آلودگی صنعتی.",
-};
+export function generateMetadata(): Metadata {
+  const page = getPage("knowledge");
+  return { title: page.metaTitle, description: page.metaDescription };
+}
 
 const ORDER: Article["kind"][] = ["buying-guide", "comparison", "cleaning-guide", "case-study"];
 
 export default function KnowledgePage() {
+  const page = getPage("knowledge");
+  const articles = getArticles();
+
   return (
     <>
-      <PageHeader
-        eyebrow="دانش"
-        title="راهنمای خرید و نظافت صنعتی"
-        lead="نوشته‌هایی که قرار است در تصمیم خرید کمک کنند، نه اینکه محتوای سئویی پر کنند."
-      >
+      <PageHeader eyebrow={page.eyebrow} title={page.title} lead={page.lead}>
         <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
           مشاور انتخاب دستگاه
         </Link>

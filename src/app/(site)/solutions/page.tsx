@@ -2,25 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { industries } from "@/lib/data/industries";
+import { getIndustries, getPage } from "@/lib/content";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "راهکارهای نظافت صنعتی بر اساس صنعت",
-  description:
-    "راهکار نظافت کارخانه، انبار، بیمارستان، هتل، مرکز خرید، صنایع غذایی، خودروسازی و پروژه‌های ساختمانی — از مسئله تا دستگاه.",
-};
+export function generateMetadata(): Metadata {
+  const page = getPage("solutions");
+  return { title: page.metaTitle, description: page.metaDescription };
+}
 
 export default function SolutionsPage() {
+  const page = getPage("solutions");
+  const industries = getIndustries();
+
   return (
     <>
-      <PageHeader
-        eyebrow="راهکارها"
-        title="راهکار نظافت بر اساس صنعت"
-        lead="کاربر صنعتی معمولاً با نام دستگاه شروع نمی‌کند؛ با مسئله شروع می‌کند. اینجا از مسئله به راهکار و بعد به دستگاه می‌رسیم."
-      >
+      <PageHeader eyebrow={page.eyebrow} title={page.title} lead={page.lead}>
         <Link href="/advisor" className={buttonVariants({ variant: "accent" })}>
           پیدا کردن دستگاه مناسب
         </Link>

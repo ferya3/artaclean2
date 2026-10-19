@@ -2,25 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { industries } from "@/lib/data/industries";
-import { projects } from "@/lib/data/knowledge";
-import { getProduct } from "@/lib/data/products";
+import { getIndustries, getPage, getProduct, getProjects } from "@/lib/content";
 import { chipVariants } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "پروژه‌های اجراشده",
-  description: "نمونه پروژه‌های تجهیز نظافت صنعتی: مشخصات سایت، دستگاه انتخاب‌شده و نتیجه.",
-};
+export function generateMetadata(): Metadata {
+  const page = getPage("projects");
+  return { title: page.metaTitle, description: page.metaDescription };
+}
 
 export default function ProjectsPage() {
+  const page = getPage("projects");
+  const projects = getProjects();
+  const industries = getIndustries();
+
   return (
     <>
-      <PageHeader
-        eyebrow="پروژه‌ها"
-        title="پروژه‌های اجراشده"
-        lead="هر پروژه با سه چیز توضیح داده شده: شرایط سایت، دستگاه انتخاب‌شده و نتیجه — بدون تعریف و تمجید."
-      />
+      <PageHeader eyebrow={page.eyebrow} title={page.title} lead={page.lead} />
 
       <div className="shell py-6">
         <Breadcrumbs trail={[{ label: "خانه", href: "/" }, { label: "پروژه‌ها" }]} />

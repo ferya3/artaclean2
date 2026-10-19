@@ -203,3 +203,41 @@ export interface Project {
   machines: Id[];
   result: string;
 }
+
+/** دفتر، نمایندگی یا مرکز خدمات. */
+export interface Office {
+  slug: Id;
+  city: string;
+  role: string;
+  address: string;
+  phone: string;
+  services: string[];
+}
+
+/**
+ * کارت صفحه — یک ظرف عام.
+ * در «درباره ما» ستون ارزش‌ها، در «گواهی‌نامه‌ها» هر استاندارد، و در
+ * «تماس» هر واحد با تلفن و ایمیل خودش. یک شکل، چون یک ویرایشگر.
+ */
+export interface PageCard {
+  title: string;
+  body: string;
+  phone?: string;
+  email?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+/** صفحه ثابت: سربرگ، متن SEO، پاراگراف‌های بدنه و کارت‌ها. */
+export interface PageContent {
+  slug: Id;
+  eyebrow: string;
+  title: string;
+  lead: string;
+  metaTitle: string;
+  metaDescription: string;
+  body: string[];
+  cards: PageCard[];
+  asideTitle?: string;
+  asideBody?: string;
+}

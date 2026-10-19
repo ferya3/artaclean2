@@ -1,23 +1,29 @@
-import { products } from "@/lib/data/products";
+import type { Product } from "@/lib/types";
 
 /**
  * بیشینه هر مشخصه در کل کاتالوگ.
  * کارت محصول عدد خام را نشان می‌دهد، ولی خریدار بدون مبنا نمی‌داند «۳٬۴۰۰ متر
  * در ساعت» زیاد است یا کم. نوار نسبت، همان عدد را در مقیاس کاتالوگ قرار می‌دهد.
+ *
+ * چون کاتالوگ حالا در دیتابیس است، این جدول هنگام رندر سرور ساخته و از طریق
+ * SpecScaleProvider به کامپوننت‌های کلاینت داده می‌شود.
  */
-const maxByKey = new Map<string, number>();
+export type SpecMaxima = Record<string, number>;
 
-for (const product of products) {
-  for (const spec of [...product.kpis, ...product.specGroups.flatMap((g) => g.specs)]) {
-    if (spec.value === undefined) continue;
-    const current = maxByKey.get(spec.key) ?? 0;
-    if (spec.value > current) maxByKey.set(spec.key, spec.value);
+export function buildSpecMaxima(products: Product[]): SpecMaxima {
+  const maxima: SpecMaxima = {};
+  for (const product of products) {
+    for (const spec of [...product.kpis, ...product.specGroups.flatMap((g) => g.specs)]) {
+      if (spec.value === undefined) continue;
+      if (spec.value > (maxima[spec.key] ?? 0)) maxima[spec.key] = spec.value;
+    }
   }
+  return maxima;
 }
 
-export function specRatio(key: string, value?: number): number | null {
+export function specRatio(maxima: SpecMaxima, key: string, value?: number): number | null {
   if (value === undefined) return null;
-  const max = maxByKey.get(key);
+  const max = maxima[key];
   if (!max || max <= 0) return null;
   return value / max;
 }

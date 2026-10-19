@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import Advisor from "@/components/advisor/Advisor";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
 import type { AdvisorAnswers } from "@/lib/advisor";
+import { consumableCategorySlugs, getPage, getProducts } from "@/lib/content";
 import { areaLabels, dirtLabels, frequencyLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import type { AreaBand, DirtKind, FrequencyBand, SurfaceKind } from "@/lib/types";
 
-export const metadata: Metadata = {
-  title: "پیدا کردن دستگاه مناسب",
-  description:
-    "با چهار پرسش درباره سطح، آلودگی، متراژ و تناوب استفاده، دستگاه‌های مناسب سایت شما را به‌همراه دلیل هر پیشنهاد فهرست می‌کنیم.",
-};
+export function generateMetadata(): Metadata {
+  const page = getPage("advisor");
+  return { title: page.metaTitle, description: page.metaDescription };
+}
 
 type Search = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -34,20 +34,27 @@ export default async function AdvisorPage({ searchParams }: Search) {
     frequency: frequency && frequency in frequencyLabels ? (frequency as FrequencyBand) : undefined,
   };
 
+  const page = getPage("advisor");
+
+  // مصرفی‌ها از رتبه‌بندی اصلی جدا می‌شوند؛ تقسیم اینجا انجام می‌شود چون
+  // «مصرفی بودن» از گروهِ دسته می‌آید و دسته‌ها محتوای قابل ویرایش‌اند.
+  const consumables = new Set(consumableCategorySlugs());
+  const all = getProducts();
+
   return (
     <>
-      <PageHeader
-        eyebrow="مشاور انتخاب دستگاه"
-        title="دستگاه مورد نیازتان را پیدا کنید"
-        lead="لازم نیست مدل دستگاه را بدانید. مسئله‌تان را بگویید — سطح، آلودگی، متراژ و تناوب — تا از مسئله به راهکار و بعد به دستگاه برسیم."
-      />
+      <PageHeader eyebrow={page.eyebrow} title={page.title} lead={page.lead} />
 
       <div className="shell py-6">
         <Breadcrumbs trail={[{ label: "خانه", href: "/" }, { label: "پیدا کردن دستگاه" }]} />
       </div>
 
       <div className="shell pb-16">
-        <Advisor initial={initial} />
+        <Advisor
+          initial={initial}
+          machines={all.filter((p) => !consumables.has(p.category))}
+          consumables={all.filter((p) => consumables.has(p.category))}
+        />
       </div>
     </>
   );

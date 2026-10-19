@@ -2,24 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { services } from "@/lib/data/services";
+import { getPage, getServices } from "@/lib/content";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "خدمات",
-  description:
-    "نصب و راه‌اندازی، سرویس دوره‌ای، تعمیرات، قطعات یدکی، آموزش اپراتور، اجاره دستگاه و گارانتی تجهیزات نظافت صنعتی.",
-};
+export function generateMetadata(): Metadata {
+  const page = getPage("services");
+  return { title: page.metaTitle, description: page.metaDescription };
+}
 
 export default function ServicesPage() {
+  const page = getPage("services");
+  const services = getServices();
+
   return (
     <>
-      <PageHeader
-        eyebrow="خدمات"
-        title="خدمات پیش و پس از فروش"
-        lead="برای تجهیزات صنعتی، خدمات پس از فروش بخشی از فروش است. دستگاهی که قطعه و سرویسش تأمین نشود، سرمایه خوابیده است."
-      >
+      <PageHeader eyebrow={page.eyebrow} title={page.title} lead={page.lead}>
         <Link href="/quote" className={buttonVariants({ variant: "accent" })}>
           درخواست خدمات
         </Link>

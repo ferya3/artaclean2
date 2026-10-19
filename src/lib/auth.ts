@@ -121,6 +121,27 @@ export async function ensureFirstAdmin(): Promise<void> {
     .run(email.toLowerCase().trim(), process.env.ADMIN_NAME ?? "مدیر", await hashPassword(password));
 }
 
+/** افزودن حساب مدیر از داخل پنل — نیازی به متغیر محیطی و ری‌استارت نیست. */
+export async function createUser(input: {
+  email: string;
+  name: string;
+  password: string;
+}): Promise<void> {
+  db()
+    .prepare("INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)")
+    .run(
+      input.email.toLowerCase().trim(),
+      input.name.trim(),
+      await hashPassword(input.password),
+    );
+}
+
+export function listUsers() {
+  return db()
+    .prepare("SELECT id, email, name, created_at FROM users ORDER BY id")
+    .all() as unknown as { id: number; email: string; name: string; created_at: string }[];
+}
+
 export async function hasAnyUser(): Promise<boolean> {
   const { count } = db().prepare("SELECT COUNT(*) AS count FROM users").get() as {
     count: number;

@@ -3,11 +3,16 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { industries } from "@/lib/data/industries";
-import type { Product } from "@/lib/types";
+import type { Industry, Product } from "@/lib/types";
 
 /** «این دستگاه برای چه محیط‌هایی مناسب است؟» — تب‌های محیط با توضیح مختص همان محیط. */
-export default function Applications({ applications }: { applications: Product["applications"] }) {
+export default function Applications({
+  applications,
+  industries,
+}: {
+  applications: Product["applications"];
+  industries: Pick<Industry, "slug" | "name" | "blurb">[];
+}) {
   const [active, setActive] = useState(0);
   if (!applications.length) return null;
 

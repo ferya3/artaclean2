@@ -7,6 +7,7 @@ import ProductCard from "@/components/product/ProductCard";
 import { recommend, recommendComplements, type AdvisorAnswers } from "@/lib/advisor";
 import { areaLabels, dirtLabels, frequencyLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { fa } from "@/lib/format";
+import type { Product } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +40,20 @@ const STEPS: { key: StepKey; question: string; hint: string; options: Record<str
   },
 ];
 
-export default function Advisor({ initial = {} }: { initial?: AdvisorAnswers }) {
+/**
+ * کاتالوگ به‌صورت prop می‌آید (از صفحه سرور) و دو تکه است: دستگاه‌ها و
+ * مصرفی‌ها. جداسازی بالادست انجام می‌شود چون «مصرفی بودن» از گروه دسته
+ * می‌آید و دسته‌ها هم محتوای قابل ویرایش‌اند.
+ */
+export default function Advisor({
+  initial = {},
+  machines,
+  consumables,
+}: {
+  initial?: AdvisorAnswers;
+  machines: Product[];
+  consumables: Product[];
+}) {
   const [answers, setAnswers] = useState<AdvisorAnswers>(initial);
 
   // اولین پرسش بی‌پاسخ، مرحله جاری است — کاربر می‌تواند هر مرحله را هم عوض کند.
@@ -47,8 +61,11 @@ export default function Advisor({ initial = {} }: { initial?: AdvisorAnswers }) 
   const complete = currentStep === -1;
   const answeredCount = STEPS.filter((s) => answers[s.key]).length;
 
-  const results = useMemo(() => recommend(answers), [answers]);
-  const complements = useMemo(() => recommendComplements(answers), [answers]);
+  const results = useMemo(() => recommend(answers, machines), [answers, machines]);
+  const complements = useMemo(
+    () => recommendComplements(answers, consumables),
+    [answers, consumables],
+  );
 
   const set = (key: StepKey, value: string) =>
     setAnswers(

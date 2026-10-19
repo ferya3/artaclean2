@@ -4,10 +4,13 @@ import { notFound } from "next/navigation";
 
 import ProductCard from "@/components/product/ProductCard";
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { getIndustry, industries } from "@/lib/data/industries";
-import { projects } from "@/lib/data/knowledge";
-import { catalogByIndustry } from "@/lib/catalog";
-import { categories } from "@/lib/data/taxonomy";
+import {
+  getCategories,
+  getIndustries,
+  getIndustry,
+  getProjects,
+  productsByIndustry,
+} from "@/lib/content";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { chipVariants } from "@/components/ui/card";
@@ -16,7 +19,7 @@ import { cn } from "@/lib/utils";
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return industries.map((i) => ({ slug: i.slug }));
+  return getIndustries().map((i) => ({ slug: i.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -35,8 +38,9 @@ export default async function SolutionPage({ params }: Params) {
   const industry = getIndustry(slug);
   if (!industry) notFound();
 
-  const recommended = catalogByIndustry(industry.slug);
-  const cases = projects.filter((p) => p.industry === industry.slug);
+  const recommended = productsByIndustry(industry.slug);
+  const cases = getProjects().filter((p) => p.industry === industry.slug);
+  const categories = getCategories();
   const cats = industry.recommendedCategories
     .map((c) => categories.find((cat) => cat.slug === c))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));

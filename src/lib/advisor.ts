@@ -1,5 +1,4 @@
-import { products } from "@/lib/data/products";
-import { areaBandRange, getCategory } from "@/lib/data/taxonomy";
+import { areaBandRange } from "@/lib/data/taxonomy";
 import type { AreaBand, DirtKind, FrequencyBand, Product, SurfaceKind } from "@/lib/types";
 
 /**
@@ -9,6 +8,9 @@ import type { AreaBand, DirtKind, FrequencyBand, Product, SurfaceKind } from "@/
  * می‌گوید «کف کارخانه‌ام ۵٬۰۰۰ متر است و روغن ریخته». این ماژول همان جمله را
  * به فهرست رتبه‌بندی‌شده دستگاه ترجمه می‌کند و — مهم‌تر — دلیل هر پیشنهاد را
  * برمی‌گرداند تا کاربر بتواند پیشنهاد را قضاوت کند، نه اینکه فقط قبولش کند.
+ *
+ * فهرست دستگاه‌ها به‌صورت پارامتر می‌آید: کاتالوگ در دیتابیس است و این ماژول
+ * از کامپوننت کلاینت هم صدا زده می‌شود، پس حق خواندن مستقیم ندارد.
  */
 
 export interface AdvisorAnswers {
@@ -41,16 +43,6 @@ function areaOverlap(band: AreaBand, p: Product): number {
   const overlap = Math.min(uMax, areaMax) - Math.max(uMin, areaMin);
   if (overlap <= 0) return 0;
   return overlap / (uMax - uMin);
-}
-
-/**
- * مصرفی‌ها (شوینده، پد، لوازم جانبی) بازه متراژ نامحدود دارند و با هر آلودگی
- * سازگارند، پس در امتیازدهی خام همیشه بالای دستگاه‌ها می‌نشینند — در حالی که
- * پرسش کاربر «چه دستگاهی نیاز دارم» است. بنابراین از رتبه‌بندی اصلی خارج و
- * به‌عنوان «مکمل» جداگانه پیشنهاد می‌شوند.
- */
-function isConsumable(product: Product): boolean {
-  return getCategory(product.category)?.group === "consumable";
 }
 
 function scoreAll(answers: AdvisorAnswers, pool: Product[]): AdvisorResult[] {
@@ -122,24 +114,43 @@ function rank(results: AdvisorResult[], threshold: number, limit: number): Advis
     .slice(0, limit);
 }
 
-/** دستگاه‌های پیشنهادی — پاسخ پرسش اصلی کاربر. */
-export function recommend(answers: AdvisorAnswers, limit = 6): AdvisorResult[] {
+/**
+ * دستگاه‌های پیشنهادی — پاسخ پرسش اصلی کاربر.
+ *
+ * `machines` باید بدون مصرفی باشد. مصرفی‌ها (شوینده، پد، لوازم جانبی) بازه
+ * متراژ نامحدود دارند و با هر آلودگی سازگارند، پس در امتیازدهی خام همیشه
+ * بالای دستگاه‌ها می‌نشینند — در حالی که پرسش کاربر «چه دستگاهی نیاز دارم»
+ * است. تقسیم کاتالوگ به دو فهرست، کار فراخوان است (گروه دسته `consumable`).
+ */
+export function recommend(
+  answers: AdvisorAnswers,
+  machines: Product[],
+  limit = 6,
+): AdvisorResult[] {
   if (Object.values(answers).filter(Boolean).length === 0) return [];
-  return rank(scoreAll(answers, products.filter((p) => !isConsumable(p))), 35, limit);
+  return rank(scoreAll(answers, machines), 35, limit);
 }
 
 /** مصرفی‌ها و لوازم مکمل — کنار دستگاه پیشنهاد می‌شوند، نه به‌جای آن. */
-export function recommendComplements(answers: AdvisorAnswers, limit = 3): AdvisorResult[] {
+export function recommendComplements(
+  answers: AdvisorAnswers,
+  consumables: Product[],
+  limit = 3,
+): AdvisorResult[] {
   if (!answers.dirt && !answers.surface) return [];
-  return rank(scoreAll(answers, products.filter(isConsumable)), 60, limit);
+  return rank(scoreAll(answers, consumables), 60, limit);
 }
 
 /**
  * توصیه انتخاب در جدول مقایسه: بین چند دستگاه، کدام برای متراژ اعلامی مناسب‌تر است.
  * عمداً ساده و قابل توضیح نگه داشته شده — کاربر باید بتواند با آن بحث کند.
  */
-export function recommendAmong(slugs: string[], band?: AreaBand): { slug: string; why: string } | null {
-  const picked = products.filter((p) => slugs.includes(p.slug));
+export function recommendAmong(
+  slugs: string[],
+  pool: Product[],
+  band?: AreaBand,
+): { slug: string; why: string } | null {
+  const picked = pool.filter((p) => slugs.includes(p.slug));
   if (picked.length < 2) return null;
 
   if (!band) {

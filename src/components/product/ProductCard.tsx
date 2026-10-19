@@ -6,9 +6,9 @@ import { useCompare } from "@/store/compare";
 import { Badge } from "@/components/ui/card";
 import { SpecBar } from "@/components/ui/Primitives";
 import ProductVisual from "@/components/ui/ProductVisual";
-import { industries } from "@/lib/data/industries";
+import { useIndustryNames, useSpecRatio } from "@/components/providers/SiteData";
 import { specValue, toman } from "@/lib/format";
-import { specRatio, visualScale } from "@/lib/scale";
+import { visualScale } from "@/lib/scale";
 import type { Product } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,12 +21,14 @@ import { cn } from "@/lib/utils";
  */
 export default function ProductCard({ product, compact = false }: { product: Product; compact?: boolean }) {
   const { has, toggle, full } = useCompare();
+  const ratioOf = useSpecRatio();
+  const names = useIndustryNames();
   const inCompare = has(product.slug);
   const href = `/products/${product.category}/${product.slug}`;
 
   const industryNames = product.applications
     .slice(0, 3)
-    .map((a) => industries.find((i) => i.slug === a.industry)?.name)
+    .map((a) => names[a.industry])
     .filter(Boolean);
 
   return (
@@ -84,7 +86,7 @@ export default function ProductCard({ product, compact = false }: { product: Pro
         {!compact && (
           <dl className="mt-5 space-y-3">
             {product.kpis.slice(0, 3).map((spec) => {
-              const ratio = specRatio(spec.key, spec.value);
+              const ratio = ratioOf(spec.key, spec.value);
               return (
                 <div key={spec.key}>
                   <div className="flex items-baseline justify-between gap-3 text-[13px]">

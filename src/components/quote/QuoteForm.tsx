@@ -6,8 +6,8 @@ import { useState, useTransition } from "react";
 import { submitQuote } from "@/app/actions/quote";
 
 import { areaLabels, dirtLabels, surfaceLabels } from "@/lib/data/taxonomy";
-import { industries } from "@/lib/data/industries";
 import { fa } from "@/lib/format";
+import type { Industry } from "@/lib/types";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +63,13 @@ const EMPTY: FormData = {
 const TIMELINES = ["فوری — این ماه", "یک تا سه ماه آینده", "سه تا شش ماه آینده", "در حال بررسی و بودجه‌ریزی"];
 const BUDGETS = ["هنوز مشخص نیست", "زیر ۵۰۰ میلیون تومان", "۵۰۰ میلیون تا ۲ میلیارد", "بالای ۲ میلیارد"];
 
-export default function QuoteForm({ presetProduct }: { presetProduct?: string }) {
+export default function QuoteForm({
+  presetProduct,
+  industries,
+}: {
+  presetProduct?: string;
+  industries: Pick<Industry, "slug" | "name">[];
+}) {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>({ ...EMPTY, interest: presetProduct ?? "" });
   const [sent, setSent] = useState(false);

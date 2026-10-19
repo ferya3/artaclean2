@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs, PageHeader } from "@/components/ui/Primitives";
-import { articleKindLabels, articles, getArticle } from "@/lib/data/knowledge";
-import { categories } from "@/lib/data/taxonomy";
+import { getArticle, getArticles, getCategories } from "@/lib/content";
+import { articleKindLabels } from "@/lib/data/knowledge";
 import { fa } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return articles.map((a) => ({ slug: a.slug }));
+  return getArticles().map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -31,10 +31,11 @@ export default async function ArticlePage({ params }: Params) {
   const article = getArticle(slug);
   if (!article) notFound();
 
+  const categories = getCategories();
   const related = article.relatedCategories
     .map((c) => categories.find((cat) => cat.slug === c))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
-  const more = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
+  const more = getArticles().filter((a) => a.slug !== article.slug).slice(0, 3);
 
   return (
     <>

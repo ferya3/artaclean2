@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
-import { extractIntent, groupHits, groupLabels, search } from "@/lib/search";
+import { searchAction, type SearchResponse } from "@/lib/actions/search";
+import { groupLabels } from "@/lib/search";
 import { areaLabels, dirtLabels, surfaceLabels } from "@/lib/data/taxonomy";
 import { buttonVariants } from "@/components/ui/button";
 import { chipVariants } from "@/components/ui/card";
@@ -18,8 +19,12 @@ const SUGGESTIONS = [
   "اجاره اسکرابر",
 ];
 
+const EMPTY: SearchResponse = { groups: [], intent: {} };
+
 export default function SearchDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [query, setQuery] = useState("");
+  const [result, setResult] = useState<SearchResponse>(EMPTY);
+  const [pending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -36,8 +41,29 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
     };
   }, [open]);
 
-  const hits = useMemo(() => (query.trim().length > 1 ? groupHits(search(query)) : []), [query]);
-  const intent = useMemo(() => (query.trim().length > 2 ? extractIntent(query) : {}), [query]);
+  // جست‌وجو سمت سرور اجرا می‌شود (کاتالوگ در دیتابیس است)، پس هر کلید یک
+  // رفت‌وبرگشت است. ۲۰۰ میلی‌ثانیه مکث، تایپ معمولی را به یک درخواست تبدیل
+  // می‌کند بدون اینکه کُند حس شود.
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) {
+      setResult(EMPTY);
+      return;
+    }
+    const timer = setTimeout(() => {
+      startTransition(async () => {
+        try {
+          setResult(await searchAction(q));
+        } catch {
+          setResult(EMPTY);
+        }
+      });
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const hits = result.groups;
+  const intent = result.intent;
   const hasIntent = Boolean(intent.surface || intent.dirt || intent.area);
 
   const advisorHref = useMemo(() => {
@@ -104,7 +130,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
               </div>
             )}
 
-            {query.trim().length > 1 && hits.length === 0 && (
+            {query.trim().length > 1 && hits.length === 0 && !pending && (
               <div className="px-4 py-10 text-center">
                 <p className="text-sm font-medium">نتیجه‌ای پیدا نشد</p>
                 <p className="mt-1 text-sm text-muted">

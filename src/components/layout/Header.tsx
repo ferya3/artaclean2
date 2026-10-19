@@ -6,17 +6,18 @@ import { useEffect, useRef, useState } from "react";
 
 import { useCompare } from "@/store/compare";
 import SearchDialog from "@/components/layout/SearchDialog";
-import { megaProducts, megaServices, megaSolutions, primaryNav } from "@/lib/nav";
+import type { MegaGroup, MegaKey, SiteNav } from "@/lib/nav";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type MegaKey = "products" | "solutions" | "services";
-
-const megaData: Record<MegaKey, { title: string; items: { label: string; href: string; latin: string }[] }[]> = {
-  products: megaProducts,
-  solutions: megaSolutions,
-  services: megaServices,
-};
+/** آنچه هدر از تنظیمات سایت لازم دارد — نه بیشتر. */
+export interface HeaderSite {
+  brandName: string;
+  brandShort: string;
+  phone: string;
+  phoneDisplay: string;
+  topbar: string;
+}
 
 const megaMeta: Record<MegaKey, { heading: string; allHref: string; allLabel: string }> = {
   products: { heading: "تجهیزات نظافت صنعتی", allHref: "/products", allLabel: "مشاهده همه تجهیزات" },
@@ -24,7 +25,7 @@ const megaMeta: Record<MegaKey, { heading: string; allHref: string; allLabel: st
   services: { heading: "خدمات پیش و پس از فروش", allHref: "/services", allLabel: "مشاهده همه خدمات" },
 };
 
-export default function Header() {
+export default function Header({ nav, site }: { nav: SiteNav; site: HeaderSite }) {
   const [open, setOpen] = useState<MegaKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -82,14 +83,14 @@ export default function Header() {
               <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-accent" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
             </span>
-            مشاوره فنی رایگان پیش از خرید — انتخاب دستگاه بر اساس متراژ و نوع آلودگی سایت شما
+            {site.topbar}
           </p>
           <div className="flex items-center gap-6">
             <Link href="/spare-parts" className="transition-colors hover:text-white">
               استعلام قطعه یدکی
             </Link>
-            <a href="tel:+982100000000" className="num transition-colors hover:text-white" dir="ltr">
-              021-0000 0000
+            <a href={`tel:${site.phone}`} className="num transition-colors hover:text-white" dir="ltr">
+              {site.phoneDisplay}
             </a>
           </div>
         </div>
@@ -116,19 +117,19 @@ export default function Header() {
 
           <Link href="/" className="group flex shrink-0 items-center gap-2.5">
             <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-gradient-to-br from-accent to-accent-2 text-sm font-black text-white shadow-glow transition-transform duration-500 group-hover:scale-105">
-              AC
+              {site.brandShort}
             </span>
             <span
               className={`hidden text-[17px] font-extrabold tracking-tight transition-colors sm:block ${
                 solid ? "text-ink" : "text-white"
               }`}
             >
-              آرتا کلین
+              {site.brandName}
             </span>
           </Link>
 
           <nav className="hidden flex-1 items-center gap-0.5 lg:flex" aria-label="منوی اصلی">
-            {primaryNav.map((item) => {
+            {nav.primary.map((item) => {
               const active = pathname.startsWith(item.href);
               return (
                 <div
@@ -218,21 +219,27 @@ export default function Header() {
           >
             <div className="shell pt-2">
               <div className="overflow-hidden rounded-xl2 border border-line bg-surface shadow-pop">
-                <MegaPanel which={open} />
+                <MegaPanel groups={nav.mega[open]} which={open} />
               </div>
             </div>
           </div>
         )}
       </header>
 
-      {mobileOpen && <MobileNav onClose={() => setMobileOpen(false)} onSearch={() => setSearchOpen(true)} />}
+      {mobileOpen && (
+        <MobileNav
+          nav={nav}
+          site={site}
+          onClose={() => setMobileOpen(false)}
+          onSearch={() => setSearchOpen(true)}
+        />
+      )}
       <SearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }
 
-function MegaPanel({ which }: { which: MegaKey }) {
-  const groups = megaData[which];
+function MegaPanel({ groups, which }: { groups: MegaGroup[]; which: MegaKey }) {
   const meta = megaMeta[which];
 
   return (
@@ -293,7 +300,17 @@ function MegaPanel({ which }: { which: MegaKey }) {
   );
 }
 
-function MobileNav({ onClose, onSearch }: { onClose: () => void; onSearch: () => void }) {
+function MobileNav({
+  nav,
+  site,
+  onClose,
+  onSearch,
+}: {
+  nav: SiteNav;
+  site: HeaderSite;
+  onClose: () => void;
+  onSearch: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <div className="absolute inset-0 bg-deep/60 backdrop-blur-sm" onClick={onClose} aria-hidden />
@@ -317,7 +334,7 @@ function MobileNav({ onClose, onSearch }: { onClose: () => void; onSearch: () =>
 
           <nav className="divide-y divide-white/10">
             {[
-              ...primaryNav,
+              ...nav.primary,
               { label: "مقایسه دستگاه‌ها", href: "/compare" },
               { label: "قطعات یدکی", href: "/spare-parts" },
               { label: "تماس با ما", href: "/company/contact" },
@@ -334,8 +351,8 @@ function MobileNav({ onClose, onSearch }: { onClose: () => void; onSearch: () =>
             ))}
           </nav>
 
-          <a href="tel:+982100000000" className="num mt-8 block text-lg font-bold text-white" dir="ltr">
-            021-0000 0000
+          <a href={`tel:${site.phone}`} className="num mt-8 block text-lg font-bold text-white" dir="ltr">
+            {site.phoneDisplay}
           </a>
         </div>
       </div>
