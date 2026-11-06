@@ -102,14 +102,16 @@ else
   fi
   note "زمان build: $(date -d "@$BUILD_TS" '+%Y-%m-%d %H:%M' 2>/dev/null || echo '?')"
 
-  CSS_COUNT="$(find .next/static/css -name '*.css' 2>/dev/null | wc -l)"
-  if (( CSS_COUNT == 0 )); then
-    bad "هیچ فایل CSS در .next/static/css نیست — Tailwind کامپایل نشده"
+  # webpack فایل CSS را در .next/static/css می‌گذاشت، Turbopack (پیش‌فرض
+  # Next 16) در .next/static/chunks. پس کل static جست‌وجو می‌شود و بزرگ‌ترین
+  # فایل — که همان استایل اصلی سایت است — سنجیده می‌شود.
+  CSS_FILE="$(find .next/static -name '*.css' -printf '%s %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)"
+  if [[ -z "$CSS_FILE" ]]; then
+    bad "هیچ فایل CSS در .next/static نیست — Tailwind کامپایل نشده"
   else
-    CSS_FILE="$(find .next/static/css -name '*.css' | head -1)"
     CSS_SIZE="$(stat -c %s "$CSS_FILE" 2>/dev/null || stat -f %z "$CSS_FILE" 2>/dev/null)"
     if (( CSS_SIZE < 10000 )); then
-      bad "فایل CSS فقط ${CSS_SIZE} بایت است — Tailwind کلاس‌ها را پیدا نکرده (content در tailwind.config)"
+      bad "فایل CSS فقط ${CSS_SIZE} بایت است — Tailwind کلاس‌ها را پیدا نکرده"
     else
       ok "CSS ساخته شده ($(( CSS_SIZE / 1024 ))KB)"
     fi
@@ -174,13 +176,31 @@ section "۴. پروسه و پورت"
 LISTENERS=""
 if command -v lsof >/dev/null 2>&1; then
   LISTENERS="$(lsof -nP -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | tail -n +2)"
-elif command -v ss >/dev/null 2>&1; then
-  LISTENERS="$(ss -lptn "sport = :$PORT" 2>/dev/null | tail -n +2)"
+fi
+# عبارت فیلتر ss («sport = :3000») بین نسخه‌های iproute2 یکسان رفتار نمی‌کند
+# و روی بعضی توزیع‌ها چیزی برنمی‌گرداند. فهرست کامل و grep همیشه کار می‌کند.
+if [[ -z "$LISTENERS" ]] && command -v ss >/dev/null 2>&1; then
+  LISTENERS="$(ss -ltnp 2>/dev/null | grep -E ":${PORT}([^0-9]|$)")"
+fi
+# آخرین راه، بدون هیچ ابزاری: جدول سوکت‌های خود کرنل. lsof و ss هر دو ممکن
+# است نصب نباشند یا در کانتینر چیزی نبینند، ولی این فایل روی هر لینوکسی هست.
+# پورت به هگز است و حالت 0A یعنی LISTEN.
+if [[ -z "$LISTENERS" ]] && [[ -r /proc/net/tcp ]]; then
+  PORT_HEX="$(printf '%04X' "$PORT")"
+  # فقط فایل‌های موجود: روی سرور بدون IPv6، tcp6 وجود ندارد و با pipefail
+  # یک cat ناموفق کل بررسی را منفی می‌کرد.
+  SOCK_TABLES=(/proc/net/tcp)
+  [[ -r /proc/net/tcp6 ]] && SOCK_TABLES+=(/proc/net/tcp6)
+  if awk -v p=":$PORT_HEX" '$2 ~ p"$" && $4 == "0A" { found=1 } END { exit !found }' \
+       "${SOCK_TABLES[@]}"; then
+    LISTENERS="(از /proc/net/tcp) یک سوکت روی پورت $PORT در حالت LISTEN است"
+  fi
 fi
 
 HAVE_PORT_TOOL=0
 command -v lsof >/dev/null 2>&1 && HAVE_PORT_TOOL=1
 command -v ss   >/dev/null 2>&1 && HAVE_PORT_TOOL=1
+[[ -r /proc/net/tcp ]] && HAVE_PORT_TOOL=1
 
 if (( HAVE_PORT_TOOL == 0 )); then
   note "نه lsof نصب است نه ss — بررسی پورت رد شد (پاسخ HTTP بالا مرجع است)"
@@ -267,22 +287,31 @@ for path in /products /products/floor-scrubbers /products/floor-scrubbers/vertex
   fi
 done
 
-# ──────────────────────────────────────────── ۷. دسترسی خروجی (فونت)
-section "۷. دسترسی به CDN فونت"
+# ────────────────────────────────────────────────────────── ۷. فونت فارسی
+section "۷. فونت فارسی"
 
-# فونت Vazirmatn از jsDelivr لود می‌شود. اگر سرور یا مرورگر کاربر به این
-# دامنه دسترسی نداشته باشد، متن با فونت جایگزین سیستم رندر می‌شود و صفحه
-# «به‌هم‌ریخته» به‌نظر می‌رسد — بدون اینکه هیچ خطایی در لاگ باشد.
-FONT_URL="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
-FONT_CODE="$(http_code "$FONT_URL" /dev/null 15)"
-
-if [[ "$FONT_CODE" == "200" ]]; then
-  ok "jsDelivr از این سرور در دسترس است"
-  note "توجه: فونت را مرورگر کاربر لود می‌کند، نه سرور. اگر کاربران ایرانی"
-  note "به jsDelivr دسترسی ندارند، فونت باید لوکال شود."
+# فونت Vazirmatn از خود سایت سرو می‌شود (‎@fontsource-variable‎)، نه از CDN.
+# اگر فایل فونت ۴۰۴ بدهد، متن با فونت جایگزین سیستم رندر می‌شود و صفحه
+# «به‌هم‌ریخته» به‌نظر می‌رسد — بدون اینکه هیچ خطایی در لاگ باشد. پس نشانی
+# فونت از همان CSS سرو‌شده بیرون کشیده و درخواست می‌شود.
+if [[ -n "${CSS_URL:-}" ]]; then
+  FONT_REL="$(curl -sS --max-time 15 "${BASE}${CSS_URL}" 2>/dev/null \
+               | grep -oE 'url\([^)]*vazirmatn-arabic[^)]*\.woff2\)' | head -1 \
+               | sed -E 's/^url\(//; s/\)$//; s/^["'"'"']//; s/["'"'"']$//')"
+  if [[ -z "$FONT_REL" ]]; then
+    bad "فونت Vazirmatn در CSS سرو‌شده پیدا نشد — متن فارسی با فونت سیستم نمایش داده می‌شود"
+  else
+    # نشانی در CSS نسبی است (‎../media/…‎) — نسبت به مسیر خود فایل CSS.
+    FONT_URL="$(dirname "$CSS_URL")/$FONT_REL"
+    FONT_CODE="$(http_code "${BASE}${FONT_URL}" /dev/null 15)"
+    if [[ "$FONT_CODE" == "200" ]]; then
+      ok "فونت از خود سایت سرو می‌شود (بدون وابستگی به CDN)"
+    else
+      bad "فایل فونت $FONT_CODE برگرداند — متن فارسی با فونت سیستم نمایش داده می‌شود"
+    fi
+  fi
 else
-  bad "jsDelivr در دسترس نیست (کد $FONT_CODE) — فونت فارسی لود نمی‌شود و صفحه به‌هم‌ریخته دیده می‌شود"
-  note "راه‌حل: فونت را داخل public/fonts بگذارید و @import را در src/app/globals.css عوض کنید."
+  note "CSS سرو‌شده پیدا نشد — بررسی فونت رد شد"
 fi
 
 # ──────────────────────────────────────────────────────────── ۸. لاگ‌ها
@@ -290,7 +319,11 @@ section "۸. آخرین خطاهای لاگ"
 
 LOG_FOUND=0
 if command -v pm2 >/dev/null 2>&1; then
-  ERR_LOG="$(pm2 logs --nostream --lines 200 --err 2>/dev/null | grep -iE 'error|exception|failed|ENOENT|EADDRINUSE' | tail -15)"
+  # خط سربرگی که خود pm2 چاپ می‌کند («…/artaclean-error.log last 200 lines:»)
+  # کلمه error را در نام فایل دارد و نباید به‌عنوان خطا شمرده شود.
+  ERR_LOG="$(pm2 logs --nostream --lines 200 --err 2>/dev/null \
+              | grep -vE '\.log last [0-9]+ lines|^\[TAILING\]' \
+              | grep -iE 'error|exception|failed|ENOENT|EADDRINUSE' | tail -15)"
   if [[ -n "$ERR_LOG" ]]; then
     printf '%s\n' "$ERR_LOG" | sed 's/^/    /'
     # pm2 لاگ را با ری‌استارت پاک نمی‌کند، پس این خطوط ممکن است مربوط به
