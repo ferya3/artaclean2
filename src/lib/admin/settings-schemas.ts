@@ -19,6 +19,25 @@ const site: SettingsSchema = {
   blurb: "نام، راه‌های تماس و متن‌های تکرارشونده‌ای که در هدر و فوتر همه صفحات دیده می‌شوند.",
   sections: [
     {
+      title: "چیدمان",
+      side: true,
+      fields: [
+        {
+          kind: "select",
+          name: "layout",
+          label: "حالت نمایش سایت",
+          source: {
+            static: [
+              { value: "boxed", label: "جعبه‌ای (Boxed)" },
+              { value: "wide", label: "تمام‌عرض (Wide)" },
+            ],
+          },
+          hint: "در حالت جعبه‌ای، روی نمایشگرهای بزرگ‌تر از ۱۴۰۰ پیکسل کل سایت در یک قاب وسط صفحه می‌نشیند. روی لپ‌تاپ کوچک و موبایل دو حالت یکسان‌اند.",
+          wide: true,
+        },
+      ],
+    },
+    {
       title: "هویت",
       fields: [
         { kind: "text", name: "brandName", label: "نام برند" },

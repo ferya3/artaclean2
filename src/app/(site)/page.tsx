@@ -6,6 +6,7 @@ import ProductCard from "@/components/product/ProductCard";
 import HeroStage from "@/components/three/HeroStage";
 import ProductVisual from "@/components/ui/ProductVisual";
 import Reveal from "@/components/motion/Reveal";
+import Carousel from "@/components/ui/Carousel";
 import { SectionHeading } from "@/components/ui/Primitives";
 import {
   getArticles,
@@ -175,9 +176,20 @@ export default function HomePage() {
           />
         </Reveal>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.slice(0, 8).map((c, i) => (
-            <Reveal key={c.slug} delay={i * 60}>
+        {/*
+          دسکتاپ: کاروسل با همه دسته‌ها. موبایل و تبلت: همان گرید قبلی با هشت
+          دسته اول — روی صفحه کوچک، گرید همه‌چیز را با یک اسکرول نشان می‌دهد و
+          کاروسل فقط پنهان‌شان می‌کرد. یک DOM برای هر دو؛ CSS تصمیم می‌گیرد.
+        */}
+        <Carousel label={home.categoriesTitle}>
+          {categories.map((c, i) => (
+            <Reveal
+              key={c.slug}
+              // تأخیر بر اساس جایگاه در نما، نه در کل فهرست: کارت نهم وقتی
+              // با کاروسل وارد دید می‌شود، نباید نیم ثانیه منتظر بماند.
+              delay={(i % 4) * 60}
+              className={i >= 8 ? "max-lg:hidden" : undefined}
+            >
               <Link href={`/products/${c.slug}`} className="card card-hover group block h-full overflow-hidden">
                 <ProductVisual
                   kind={c.slug}
@@ -192,7 +204,7 @@ export default function HomePage() {
               </Link>
             </Reveal>
           ))}
-        </div>
+        </Carousel>
       </section>
 
       {/* ══════════════════════════════════════ 04 — محصولات منتخب */}

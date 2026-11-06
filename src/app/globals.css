@@ -18,6 +18,8 @@
 
   /* سطح روشن */
   --color-canvas: #f5f5f2;
+  /* زمینه بیرون قاب در حالت جعبه‌ای — یک پله تیره‌تر از canvas. */
+  --color-backdrop: #e4e4de;
   --color-surface: #ffffff;
   --color-ink: #0d0f12;
   --color-muted: #686e76;
@@ -146,6 +148,49 @@
   @media (width >= 64rem) {
     .shell {
       padding-inline: --spacing(8);
+    }
+  }
+
+  /*
+    پوسته سایت و حالت جعبه‌ای (Boxed).
+
+    زیر ۱۴۰۰ پیکسل دو حالت یکسان‌اند: قاب ۱۳۶۰ پیکسلی روی لپ‌تاپ ۱۳۶۶ فقط
+    چند پیکسل حاشیه می‌ساخت که شبیه خطا دیده می‌شود، نه طراحی.
+
+    overflow: clip و نه hidden — hidden یک scroll container می‌سازد و هدر
+    sticky دیگر به بالای پنجره نمی‌چسبد. clip فقط می‌بُرد: نوارهای تیره،
+    glowها و صحنه سه‌بعدی داخل قاب گوشه‌گرد می‌مانند و sticky سالم است.
+    عناصر fixed (دیالوگ جستجو، منوی موبایل) هم بریده نمی‌شوند، چون
+    containing blockشان خود پنجره است.
+  */
+  .site-frame {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  @media (width >= 87.5rem) {
+    .site-boxed {
+      padding-block: --spacing(5);
+      background-color: var(--color-backdrop);
+      background-image: radial-gradient(
+        circle at 50% 0%,
+        --alpha(var(--color-accent) / 7%),
+        transparent 55%
+      );
+      background-attachment: fixed;
+    }
+
+    .site-boxed > .site-frame {
+      max-width: 85rem;
+      min-height: calc(100vh - --spacing(10));
+      margin-inline: auto;
+      overflow: clip;
+      border-radius: 28px;
+      background-color: var(--color-canvas);
+      box-shadow:
+        0 0 0 1px --alpha(var(--color-ink) / 6%),
+        0 50px 120px -50px rgb(13 15 18 / 0.45);
     }
   }
 

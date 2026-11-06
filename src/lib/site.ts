@@ -14,6 +14,12 @@ import { readSetting } from "@/lib/db/content";
  */
 
 export interface SiteSettings {
+  /**
+   * چیدمان کلی سایت.
+   * «boxed»: روی نمایشگر بزرگ، کل سایت در یک قاب با پهنای ثابت و حاشیه
+   * می‌نشیند. «wide»: نوارهای تیره و روشن تا لبه پنجره کشیده می‌شوند.
+   */
+  layout: string;
   brandName: string;
   brandShort: string;
   description: string;
@@ -87,6 +93,7 @@ export interface NavSettings {
 /* ───────────────────────────────────────────────────── پیش‌فرض‌ها */
 
 export const defaultSite: SiteSettings = {
+  layout: "boxed",
   brandName: "آرتا کلین",
   brandShort: "AC",
   description:

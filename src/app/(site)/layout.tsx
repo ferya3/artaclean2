@@ -23,22 +23,25 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <SiteDataProvider value={siteData}>
-      <div className="flex min-h-screen flex-col">
-        <SmoothScroll />
-        <Header
-          nav={nav}
-          site={{
-            brandName: site.brandName,
-            brandShort: site.brandShort,
-            phone: site.phone,
-            phoneDisplay: site.phoneDisplay,
-            topbar: site.topbar,
-          }}
-        />
-        <main className="flex-1">{children}</main>
-        <Footer nav={nav} site={site} />
-        <CompareBar />
-        <StickyCta />
+      {/* حالت جعبه‌ای فقط یک کلاس روی پوسته بیرونی است؛ چیدمان در globals.css. */}
+      <div className={site.layout === "wide" ? undefined : "site-boxed"}>
+        <div className="site-frame">
+          <SmoothScroll />
+          <Header
+            nav={nav}
+            site={{
+              brandName: site.brandName,
+              brandShort: site.brandShort,
+              phone: site.phone,
+              phoneDisplay: site.phoneDisplay,
+              topbar: site.topbar,
+            }}
+          />
+          <main className="flex-1">{children}</main>
+          <Footer nav={nav} site={site} />
+          <CompareBar />
+          <StickyCta />
+        </div>
       </div>
     </SiteDataProvider>
   );
